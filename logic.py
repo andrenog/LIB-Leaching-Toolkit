@@ -94,28 +94,29 @@ def twinPredictorHelper(X_train, X_test, y_train, y_test_minus_y_pred):
 
 # LOAD PRE-TRAINED MODELS
 
-# Load data
-X_train = joblib.load('model/xtrain.gz')
-y_train = joblib.load('model/ytrain.gz')
-# X_test = joblib.load('model/xtest.gz')
-# y_test = joblib.load('model/ytest.gz')
+if __name__ == "__main__":
+    # Load data that was used to train the model. This is needed for the pairwise models
+    X_train = joblib.load('model/xtrain.gz')
+    y_train = joblib.load('model/ytrain.gz')
+    # X_test = joblib.load('model/xtest.gz')
+    # y_test = joblib.load('model/ytest.gz')
 
-# Load points to predict
-X_test,_ = importdata('test_20240827.xlsx')
+    # Load points to predict
+    X_test,_ = importdata('test_20240827.xlsx')
 
-# Load pre-trained PD-GBR model
-mdl = joblib.load('model/PGBR.gz')
+    # Load pre-trained PD-GBR model
+    mdl = joblib.load('model/PGBR.gz')
 
 # Make predictions
 
-expTest_X  = genFeatures(X_test, X_train)
-y_test_minus_y_pred = mdl[0].predict(expTest_X)
+# expTest_X  = genFeatures(X_test, X_train)
+# y_test_minus_y_pred = mdl[0].predict(expTest_X)
 
-y_pred_mu, y_pred_std = twinPredictorHelper(X_train, X_test, y_train, y_test_minus_y_pred)
+# y_pred_mu, y_pred_std = twinPredictorHelper(X_train, X_test, y_train, y_test_minus_y_pred)
 
-y_pred_mu = pd.DataFrame(y_pred_mu, columns=['xLi', 'xNi', 'xMn', 'xCo'])
-y_pred_std = pd.DataFrame(y_pred_std, columns=['xLi', 'xNi', 'xMn', 'xCo'])
+# y_pred_mu = pd.DataFrame(y_pred_mu, columns=['xLi', 'xNi', 'xMn', 'xCo'])
+# y_pred_std = pd.DataFrame(y_pred_std, columns=['xLi', 'xNi', 'xMn', 'xCo'])
 
-print('Saved predictions as pred_mu.txt')
-y_pred_mu.to_csv('pred_mu.txt', index=False,sep='\t', float_format='%.6f')
-y_pred_std.to_csv('pred_std.txt', index=False,sep='\t', float_format='%.6f')
+# print('Saved predictions as pred_mu.txt')
+# y_pred_mu.to_csv('pred_mu.txt', index=False,sep='\t', float_format='%.6f')
+# y_pred_std.to_csv('pred_std.txt', index=False,sep='\t', float_format='%.6f')

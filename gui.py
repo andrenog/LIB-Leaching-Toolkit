@@ -1,13 +1,18 @@
-import customtkinter
+import customtkinter as ctk
+import logic
+import os
 
-customtkinter.set_appearance_mode("light")
-customtkinter.set_default_color_theme("blue")
+from tkinter import filedialog
 
-class App(customtkinter.CTk):
+ctk.set_appearance_mode("light")
+ctk.set_default_color_theme("blue")
+
+class App(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.geometry("900x600")
         self.title("LIB Recycling Helper")
+        self.iconbitmap("icon.ico")
 
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
@@ -15,146 +20,191 @@ class App(customtkinter.CTk):
         self.navigation = NavigationFrame(self, controller=self)
         self.navigation.grid(row=0, column=0, sticky="nesw")
 
-        self.frame5 = Frame5(self, controller=self)
-        self.frame4 = Frame4(self, controller=self)
-        self.frame3 = Frame3(self, controller=self)
-        self.frame2 = Frame2(self, controller=self)
-        self.frame1 = Frame1(self, controller=self)
+        self.summaryFrame   = FrameSummary(self, controller=self)
+        self.impactFrame    = FrameImpact(self, controller=self)
+        self.predsFrame     = FramePreds(self, controller=self)
+        self.inputsFrame    = FrameInputs(self, controller=self)
+        self.optFrame       = FrameOpt(self, controller=self)
 
-        self.frame1.grid(row=0, column=1, sticky="nsew")
-        self.frame2.grid(row=0, column=1, sticky="nsew")
-        self.frame3.grid(row=0, column=1, sticky="nsew")
-        self.frame4.grid(row=0, column=1, sticky="nsew")
-        self.frame5.grid(row=0, column=1, sticky="nsew")
+        self.optFrame.grid(row=0, column=1, sticky="nsew")
+        self.inputsFrame.grid(row=0, column=1, sticky="nsew")
+        self.predsFrame.grid(row=0, column=1, sticky="nsew")
+        self.impactFrame.grid(row=0, column=1, sticky="nsew")
+        self.summaryFrame.grid(row=0, column=1, sticky="nsew")
 
 # Setup navigation bar on the lefthand side of the window
-class NavigationFrame(customtkinter.CTkFrame):
+class NavigationFrame(ctk.CTkFrame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
         self.configure(fg_color="grey76")
-        self.configure(border_width=2)
+        # self.configure(border_width=2)
 
         # Title
-        title = customtkinter.CTkLabel(self, 
-                                       text="LIB RECYCLING",
-                                       anchor="center",
-                                       font=("Helvetica", 18, 'bold'))
+        title = ctk.CTkLabel(self,
+                             text="LIB RECYCLING",
+                             font=("Helvetica", 18, 'bold'))
         title.grid(row=0, column=0, padx=(20, 20),pady=(10,0))
 
         # Add buttons to access the different steps
-        btnOptions = customtkinter.CTkButton(self, 
+        btnOptions = ctk.CTkButton(self, 
                                         text="0. Options",
-                                        anchor="center",
                                         command=self.optnEvent,
                                         font=("Helvetica", 14))
         btnOptions.grid(row=1, column=0, padx=(20, 20), pady=(10,10))
 
-        btnInputs = customtkinter.CTkButton(self, 
+        btnInputs = ctk.CTkButton(self, 
                                         text="1. Inputs",
-                                        anchor="center",
                                         command=self.inputsEvent,
                                         font=("Helvetica", 14))
         btnInputs.grid(row=2, column=0, padx=(20, 20), pady=(10,10))
 
-        btnPred = customtkinter.CTkButton(self, 
+        btnPred = ctk.CTkButton(self, 
                                         text="2. Predictions",
-                                        anchor="center",
                                         command=self.predEvent,
                                         font=("Helvetica", 14))
         btnPred.grid(row=3, column=0, padx=(20, 20), pady=(10,10))
 
-        btnImpact = customtkinter.CTkButton(self, 
+        btnImpact = ctk.CTkButton(self, 
                                         text="3. Eco analysis",
-                                        anchor="center",
                                         command=self.impactEvent,
                                         font=("Helvetica", 14))
         btnImpact.grid(row=4, column=0, padx=(20, 20), pady=(10,10))
 
-        btnSummary = customtkinter.CTkButton(self, 
+        btnSummary = ctk.CTkButton(self, 
                                         text="4. Summary",
-                                        anchor="center",
                                         command=self.summaryEvent,
                                         font=("Helvetica", 14))
         btnSummary.grid(row=5, column=0, padx=(20, 20), pady=(10,10))
 
     # These fucntions are called when the buttons above are pressed
     def optnEvent(self):
-        print("Options button clicked")
-        self.controller.frame1.tkraise()
+        print("Options frame open")
+        self.controller.optFrame.tkraise()
     def inputsEvent(self):
-        print("Inputs button clicked")
-        self.controller.frame2.tkraise()
+        print("Inputs frame open")
+        self.controller.inputsFrame.tkraise()
     def predEvent(self):
-        print("Predictions button clicked")
-        self.controller.frame3.tkraise()
+        print("Predictions frame open")
+        self.controller.predsFrame.tkraise()
     def impactEvent(self):
-        print("Impacts button clicked")
-        self.controller.frame4.tkraise()
+        print("Impacts frame open")
+        self.controller.impactFrame.tkraise()
     def summaryEvent(self):
-        print("Summary button clicked")
-        self.controller.frame5.tkraise()
+        print("Summary frame open")
+        self.controller.summaryFrame.tkraise()
 
 # Setup the different windows that appear in the right side of the window
-class Frame1(customtkinter.CTkFrame):
+class FrameOpt(ctk.CTkFrame):
     def __init__(self, parent, controller):
         super().__init__(parent)
 
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
-        title = customtkinter.CTkLabel(self, 
-                                       text="OPTIONS HERE", 
-                                       anchor="center")
+        title = ctk.CTkLabel(self, 
+                                       text="OPTIONS HERE")
         title.grid(row=0, column=0)
 
-class Frame2(customtkinter.CTkFrame):
+# This window handles the files containing the conditions to predict
+class FrameInputs(ctk.CTkFrame):
+    def __init__(self, parent, controller):
+        super().__init__(parent)
+
+        # Setup the grid for this frame
+        self.grid_columnconfigure((0,1), weight=1, uniform="group1")
+        # self.grid_columnconfigure(1, weight=0, uniform="group1")
+        self.grid_rowconfigure((0,2), weight=0)
+        self.grid_rowconfigure((1, 3),weight=1)
+
+
+        # Title of the window with some explanation
+        title = ctk.CTkLabel(self, 
+                            text="These are the conditions for which the yields will be predicted")
+        title.grid(row=0, column=0, columnspan=2, pady=(10,0))
+
+        # Label and button to allow picking of a test data file
+        self.file_path = ""
+        pick_file_button = ctk.CTkButton(
+            master=self, 
+            text="Browse...", 
+            command=self.pick_file)
+        pick_file_button.grid(row=1, column=1, sticky="w", padx=(5,5), pady=(10,))
+
+        self.fileLabel = ctk.CTkLabel(self,
+                                      text="No file selected.",
+                                      font=("Helvetica", 14, 'bold'))
+        self.fileLabel.grid(row=1, column=0, sticky="e", padx=(5,5), pady=(10,))
+
+        # Display the table using a simple textbox
+        tableLabel=ctk.CTkLabel(self,
+                                text="Conditions:",
+                                font=("Helvetica", 14, 'bold'))
+        tableLabel.grid(row=2, column=0, columnspan=2, sticky="sw", padx=10)
+
+        self.textbox = ctk.CTkTextbox(self)
+        self.textbox.grid(row=3, column=0, columnspan=2, sticky="nsew", pady=(0,20), padx=(20,20))
+
+    # This function handles the logic behind the browse button
+    def pick_file(self):
+        """Opens a file dialog for .xlsx files, stores the path, and updates the label."""
+        # Get the directory of the current .py file
+        default_directory = os.path.dirname(os.path.abspath(__file__))
+        self.file_path = filedialog.askopenfilename(
+            initialdir=default_directory,
+            title="Select Excel File containing the conditions for prediction",
+            filetypes=(("Excel files", "*.xlsx *.xls *.ods"), ("All files", "*.*"))
+        )
+
+        # Checks if file_path has been set. Only relevant in case the browse window is closed before picking a file.
+        if self.file_path:
+            self.file_name = os.path.basename(self.file_path)  # Extract file name
+            self.fileLabel.configure(text=f"{self.file_name}")
+
+            X_test,_ = logic.importdata(self.file_path)
+            # print(X_test)
+
+
+
+            # Convert DataFrame to string
+            table_str = X_test.to_string(index=False)  # Exclude index if not needed
+
+            self.textbox.insert("0.0", table_str)  # Insert at the beginning
+            self.textbox.configure(state="disabled")  # Make it read-only
+
+
+class FramePreds(ctk.CTkFrame):
     def __init__(self, parent, controller):
         super().__init__(parent)
 
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
-        title = customtkinter.CTkLabel(self, 
-                                       text="INPUTS HERE", 
-                                       anchor="center")
+        title = ctk.CTkLabel(self,
+                             text="ML RESULTS HERE")
         title.grid(row=0, column=0)
 
-class Frame3(customtkinter.CTkFrame):
+class FrameImpact(ctk.CTkFrame):
     def __init__(self, parent, controller):
         super().__init__(parent)
 
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
-        title = customtkinter.CTkLabel(self, 
-                                       text="ML RESULTS HERE", 
-                                       anchor="center")
+        title = ctk.CTkLabel(self,
+                             text="ECO RESULTS HERE")
         title.grid(row=0, column=0)
 
-class Frame4(customtkinter.CTkFrame):
+class FrameSummary(ctk.CTkFrame):
     def __init__(self, parent, controller):
         super().__init__(parent)
 
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
-        title = customtkinter.CTkLabel(self, 
-                                       text="ECO RESULTS HERE", 
-                                       anchor="center")
+        title = ctk.CTkLabel(self,
+                             text="SUMMARY/EXPORT HERE")
         title.grid(row=0, column=0)
 
-class Frame5(customtkinter.CTkFrame):
-    def __init__(self, parent, controller):
-        super().__init__(parent)
-
-        self.grid_rowconfigure(0, weight=1)
-        self.grid_columnconfigure(0, weight=1)
-
-        title = customtkinter.CTkLabel(self, 
-                                       text="SUMMARY/EXPORT HERE", 
-                                       anchor="center")
-        title.grid(row=0, column=0)
-              
 app = App()
 app.mainloop()
