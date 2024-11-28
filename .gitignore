@@ -34,15 +34,3 @@ octave-workspace
 
 Python/predictions.txt
 /.vscode
-*.gz
-*.png
-*.svg
-Python/predictionsSVM.txt
-Python/predictionsRF.txt
-Python/predictionsMLP.txt
-Python/predictionsGBR.txt
-/Python/trained3
-/Python/trained2
-/Python/trained1
-/Python/Complete tests
-/Python/Archive
