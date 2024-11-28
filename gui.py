@@ -6,7 +6,7 @@ customtkinter.set_default_color_theme("blue")
 class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
-        self.geometry("750x500")
+        self.geometry("900x600")
         self.title("LIB Recycling Helper")
 
         self.grid_rowconfigure(0, weight=1)
@@ -33,63 +33,69 @@ class NavigationFrame(customtkinter.CTkFrame):
         super().__init__(parent)
         self.controller = controller
         self.configure(fg_color="grey76")
+        self.configure(border_width=2)
 
         # Title
         title = customtkinter.CTkLabel(self, 
                                        text="LIB RECYCLING",
                                        anchor="center",
-                                       font=("Helvetica", 18))
+                                       font=("Helvetica", 18, 'bold'))
         title.grid(row=0, column=0, padx=(20, 20),pady=(10,0))
 
         # Add buttons to access the different steps
-        test1 = customtkinter.CTkButton(self, 
+        btnOptions = customtkinter.CTkButton(self, 
                                         text="0. Options",
                                         anchor="center",
-                                        command=self.one_event)
-        test1.grid(row=1, column=0, padx=(20, 20), pady=(10,10))
+                                        command=self.optnEvent,
+                                        font=("Helvetica", 14))
+        btnOptions.grid(row=1, column=0, padx=(20, 20), pady=(10,10))
 
-        test2 = customtkinter.CTkButton(self, 
+        btnInputs = customtkinter.CTkButton(self, 
                                         text="1. Inputs",
                                         anchor="center",
-                                        command=self.two_event)
-        test2.grid(row=2, column=0, padx=(20, 20), pady=(10,10))
+                                        command=self.inputsEvent,
+                                        font=("Helvetica", 14))
+        btnInputs.grid(row=2, column=0, padx=(20, 20), pady=(10,10))
 
-        test3 = customtkinter.CTkButton(self, 
+        btnPred = customtkinter.CTkButton(self, 
                                         text="2. Predictions",
                                         anchor="center",
-                                        command=self.three_event)
-        test3.grid(row=3, column=0, padx=(20, 20), pady=(10,10))
+                                        command=self.predEvent,
+                                        font=("Helvetica", 14))
+        btnPred.grid(row=3, column=0, padx=(20, 20), pady=(10,10))
 
-        test4 = customtkinter.CTkButton(self, 
+        btnImpact = customtkinter.CTkButton(self, 
                                         text="3. Eco analysis",
                                         anchor="center",
-                                        command=self.four_event)
-        test4.grid(row=4, column=0, padx=(20, 20), pady=(10,10))
+                                        command=self.impactEvent,
+                                        font=("Helvetica", 14))
+        btnImpact.grid(row=4, column=0, padx=(20, 20), pady=(10,10))
 
-        test5 = customtkinter.CTkButton(self, 
+        btnSummary = customtkinter.CTkButton(self, 
                                         text="4. Summary",
                                         anchor="center",
-                                        command=self.five_event)
-        test5.grid(row=5, column=0, padx=(20, 20), pady=(10,10))
+                                        command=self.summaryEvent,
+                                        font=("Helvetica", 14))
+        btnSummary.grid(row=5, column=0, padx=(20, 20), pady=(10,10))
 
     # These fucntions are called when the buttons above are pressed
-    def one_event(self):
-        print("Frame 1 button clicked")
+    def optnEvent(self):
+        print("Options button clicked")
         self.controller.frame1.tkraise()
-    def two_event(self):
-        print("Frame 2 button clicked")
+    def inputsEvent(self):
+        print("Inputs button clicked")
         self.controller.frame2.tkraise()
-    def three_event(self):
-        print("Frame 3 button clicked")
+    def predEvent(self):
+        print("Predictions button clicked")
         self.controller.frame3.tkraise()
-    def four_event(self):
-        print("Frame 4 button clicked")
+    def impactEvent(self):
+        print("Impacts button clicked")
         self.controller.frame4.tkraise()
-    def five_event(self):
-        print("Frame 5 button clicked")
+    def summaryEvent(self):
+        print("Summary button clicked")
         self.controller.frame5.tkraise()
 
-# Setup the righthand panels shown after clicking the buttons in the navbar
+# Setup the different windows that appear in the right side of the window
 class Frame1(customtkinter.CTkFrame):
     def __init__(self, parent, controller):
         super().__init__(parent)
