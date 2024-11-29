@@ -34,3 +34,6 @@ octave-workspace
 
 Python/predictions.txt
 /.vscode
+
+~$*
+__pycache__
