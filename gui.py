@@ -1,4 +1,5 @@
 import customtkinter as ctk
+import pandastable as ptable
 import logic
 import os
 
@@ -115,7 +116,7 @@ class FrameInputs(ctk.CTkFrame):
         self.grid_columnconfigure((0,1), weight=1, uniform="group1")
         # self.grid_columnconfigure(1, weight=0, uniform="group1")
         self.grid_rowconfigure((0,2), weight=0)
-        self.grid_rowconfigure((1, 3),weight=1)
+        self.grid_rowconfigure((1, 3, 4),weight=1)
 
 
         # Title of the window with some explanation
@@ -137,11 +138,12 @@ class FrameInputs(ctk.CTkFrame):
         self.fileLabel.grid(row=1, column=0, sticky="e", padx=(5,5), pady=(10,))
 
         # Display the table using a simple textbox
+        # A simple label for the table
         tableLabel=ctk.CTkLabel(self,
                                 text="Conditions:",
                                 font=("Helvetica", 14, 'bold'))
         tableLabel.grid(row=2, column=0, columnspan=2, sticky="sw", padx=10)
-
+        # The textbox the table is displayed in
         self.textbox = ctk.CTkTextbox(self)
         self.textbox.grid(row=3, column=0, columnspan=2, sticky="nsew", pady=(0,20), padx=(20,20))
 
@@ -164,13 +166,13 @@ class FrameInputs(ctk.CTkFrame):
             X_test,_ = logic.importdata(self.file_path)
             # print(X_test)
 
-
-
             # Convert DataFrame to string
             table_str = X_test.to_string(index=False)  # Exclude index if not needed
 
             self.textbox.insert("0.0", table_str)  # Insert at the beginning
             self.textbox.configure(state="disabled")  # Make it read-only
+
+            # Try using a pandastable
 
 
 class FramePreds(ctk.CTkFrame):
