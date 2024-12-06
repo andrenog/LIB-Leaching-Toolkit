@@ -154,11 +154,13 @@ class FrameInputs(ctk.CTkFrame):
 
         sheet = Sheet(self, data=lst_data, header=headers)
         sheet.enable_bindings()
+        sheet.disable_bindings('edit_cell')
+        sheet.disable_bindings('paste')
         sheet.font(("Helvetica", 12, "normal"))
-        sheet.header_font(("Helvetica", 14, "bold"))
+        sheet.header_font(("Helvetica", 12, "bold"))
         sheet.table_align("right")
         sheet.index_align("center")
-        sheet.set_options(auto_resize_columns=100)
+        sheet.set_all_cell_sizes_to_text()
         sheet.grid(row=3, column=0, columnspan=2, sticky="nsew", pady=(0,20), padx=(20,20))
 
     # This function handles the logic behind the browse button
@@ -185,11 +187,13 @@ class FrameInputs(ctk.CTkFrame):
 
             sheet = Sheet(self, data=lst_data, header=headers)
             sheet.enable_bindings()
+            sheet.disable_bindings('edit_cell')
+            sheet.disable_bindings('paste')
             sheet.font(("Helvetica", 12, "normal"))
-            sheet.header_font(("Helvetica", 14, "bold"))
+            sheet.header_font(("Helvetica", 12, "bold"))
             sheet.table_align("right")
             sheet.index_align("center")
-            sheet.set_options(auto_resize_columns=100)
+            sheet.set_all_cell_sizes_to_text()
             sheet.grid(row=3, column=0, columnspan=2, sticky="nsew", pady=(0,20), padx=(20,20))
 
 
