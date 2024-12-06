@@ -1,9 +1,9 @@
-import customtkinter as ctk
-import pandastable as ptable
+import customtkinter as ctk 
 import logic
 import os
 
 from tkinter import filedialog
+from tksheet import Sheet
 
 ctk.set_appearance_mode("light")
 ctk.set_default_color_theme("blue")
@@ -143,9 +143,23 @@ class FrameInputs(ctk.CTkFrame):
                                 text="Conditions:",
                                 font=("Helvetica", 14, 'bold'))
         tableLabel.grid(row=2, column=0, columnspan=2, sticky="sw", padx=10)
-        # The textbox the table is displayed in
-        self.textbox = ctk.CTkTextbox(self)
-        self.textbox.grid(row=3, column=0, columnspan=2, sticky="nsew", pady=(0,20), padx=(20,20))
+
+        sampleTable,_ = logic.importdata("sample.xlsx")
+
+        # Try using a tksheet
+        lst_data = sampleTable.values.tolist()
+        # headers = sampleTable.columns.tolist()
+
+        headers = ["inputNi", 'inputMn', 'inputCo', 'T (°C)', 'pKa1', '[acid] (M)', '[H2O2] (wt.%)', 'S/L (g/L)', 't (min)']
+
+        sheet = Sheet(self, data=lst_data, header=headers)
+        sheet.enable_bindings()
+        sheet.font(("Helvetica", 12, "normal"))
+        sheet.header_font(("Helvetica", 14, "bold"))
+        sheet.table_align("right")
+        sheet.index_align("center")
+        sheet.set_options(auto_resize_columns=100)
+        sheet.grid(row=3, column=0, columnspan=2, sticky="nsew", pady=(0,20), padx=(20,20))
 
     # This function handles the logic behind the browse button
     def pick_file(self):
@@ -164,15 +178,20 @@ class FrameInputs(ctk.CTkFrame):
             self.fileLabel.configure(text=f"{self.file_name}")
 
             X_test,_ = logic.importdata(self.file_path)
-            # print(X_test)
 
-            # Convert DataFrame to string
-            table_str = X_test.to_string(index=False)  # Exclude index if not needed
+            # Try using a tksheet
+            lst_data = X_test.values.tolist()
+            headers = ["inputNi", 'inputMn', 'inputCo', 'T (°C)', 'pKa1', '[acid] (M)', '[H2O2] (wt.%)', 'S/L (g/L)', 't (min)']
 
-            self.textbox.insert("0.0", table_str)  # Insert at the beginning
-            self.textbox.configure(state="disabled")  # Make it read-only
+            sheet = Sheet(self, data=lst_data, header=headers)
+            sheet.enable_bindings()
+            sheet.font(("Helvetica", 12, "normal"))
+            sheet.header_font(("Helvetica", 14, "bold"))
+            sheet.table_align("right")
+            sheet.index_align("center")
+            sheet.set_options(auto_resize_columns=100)
+            sheet.grid(row=3, column=0, columnspan=2, sticky="nsew", pady=(0,20), padx=(20,20))
 
-            # Try using a pandastable
 
 
 class FramePreds(ctk.CTkFrame):
