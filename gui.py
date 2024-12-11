@@ -118,10 +118,8 @@ class FrameInputs(ctk.CTkFrame):
         self.grid_rowconfigure((0,2), weight=0)
         self.grid_rowconfigure((1, 3, 4),weight=1)
 
-
         # Title of the window with some explanation
-        title = ctk.CTkLabel(self, 
-                            text="These are the conditions for which the yields will be predicted")
+        title = ctk.CTkLabel(self, text="These are the conditions for which the yields will be predicted")
         title.grid(row=0, column=0, columnspan=2, pady=(10,0))
 
         # Label and button to allow picking of a test data file
@@ -132,41 +130,23 @@ class FrameInputs(ctk.CTkFrame):
             command=self.pick_file)
         pick_file_button.grid(row=1, column=1, sticky="w", padx=(5,5), pady=(10,))
 
-        self.fileLabel = ctk.CTkLabel(self,
-                                      text="No file selected.",
-                                      font=("Helvetica", 14, 'bold'))
+        self.fileLabel = ctk.CTkLabel(self, text="No file selected.", font=("Helvetica", 14, 'bold'))
         self.fileLabel.grid(row=1, column=0, sticky="e", padx=(5,5), pady=(10,))
 
-        # Display the table using a simple textbox
         # A simple label for the table
-        tableLabel=ctk.CTkLabel(self,
-                                text="Conditions:",
-                                font=("Helvetica", 14, 'bold'))
+        tableLabel=ctk.CTkLabel(self, text="Conditions:", font=("Helvetica", 14, 'bold'))
         tableLabel.grid(row=2, column=0, columnspan=2, sticky="sw", padx=10)
 
+        # Import sample data
         sampleTable,_ = logic.importdata("sample.xlsx")
 
-        # Try using a tksheet
+        # Use a tksheet to display the input data
         lst_data = sampleTable.values.tolist()
         # headers = sampleTable.columns.tolist()
 
         headers = ["inputNi", 'inputMn', 'inputCo', 'T (°C)', 'pKa1', '[acid] (M)', '[H2O2] (wt.%)', 'S/L (g/L)', 't (min)']
 
-        sheet = Sheet(self, data=lst_data, header=headers)
-        sheet.enable_bindings()
-        sheet.disable_bindings('edit_cell')
-        sheet.disable_bindings('paste')
-        sheet.disable_bindings('cut')
-        sheet.disable_bindings('delete')
-        sheet.disable_bindings("rc_insert_column")
-        sheet.disable_bindings("rc_delete_column")
-        sheet.disable_bindings("rc_insert_row")
-        sheet.disable_bindings("rc_delete_row")
-        sheet.font(("Helvetica", 12, "normal"))
-        sheet.header_font(("Helvetica", 12, "bold"))
-        sheet.table_align("right")
-        sheet.index_align("center")
-        sheet.set_all_cell_sizes_to_text()
+        sheet = self.dfTable(lst_data, headers)
         sheet.grid(row=3, column=0, columnspan=2, sticky="nsew", pady=(0,20), padx=(20,20))
 
     # This function handles the logic behind the browse button
@@ -190,24 +170,29 @@ class FrameInputs(ctk.CTkFrame):
             # Try using a tksheet
             lst_data = X_test.values.tolist()
             headers = ["inputNi", 'inputMn', 'inputCo', 'T (°C)', 'pKa1', '[acid] (M)', '[H2O2] (wt.%)', 'S/L (g/L)', 't (min)']
-
-            sheet = Sheet(self, data=lst_data, header=headers)
-            sheet.enable_bindings()
-            sheet.disable_bindings('edit_cell')
-            sheet.disable_bindings('paste')
-            sheet.disable_bindings('cut')
-            sheet.disable_bindings('delete')
-            sheet.disable_bindings("rc_insert_column")
-            sheet.disable_bindings("rc_delete_column")
-            sheet.disable_bindings("rc_insert_row")
-            sheet.disable_bindings("rc_delete_row")
-            sheet.font(("Helvetica", 12, "normal"))
-            sheet.header_font(("Helvetica", 12, "bold"))
-            sheet.table_align("right")
-            sheet.index_align("center")
-            sheet.set_all_cell_sizes_to_text()
+            
+            sheet = self.dfTable(lst_data, headers)
             sheet.grid(row=3, column=0, columnspan=2, sticky="nsew", pady=(0,20), padx=(20,20))
 
+
+    def dfTable(self, tableData, tableHeaders):
+        sheet = Sheet(self, data=tableData, header=tableHeaders)
+        sheet.enable_bindings()
+        sheet.disable_bindings('edit_cell')
+        sheet.disable_bindings('paste')
+        sheet.disable_bindings('cut')
+        sheet.disable_bindings('delete')
+        sheet.disable_bindings("rc_insert_column")
+        sheet.disable_bindings("rc_delete_column")
+        sheet.disable_bindings("rc_insert_row")
+        sheet.disable_bindings("rc_delete_row")
+        sheet.font(("Helvetica", 12, "normal"))
+        sheet.header_font(("Helvetica", 12, "bold"))
+        sheet.table_align("right")
+        sheet.index_align("center")
+        sheet.set_all_cell_sizes_to_text()
+        return sheet
+        
 
 
 class FramePreds(ctk.CTkFrame):
