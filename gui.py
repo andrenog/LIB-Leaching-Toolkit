@@ -8,6 +8,8 @@ from tksheet import Sheet
 ctk.set_appearance_mode("light")
 ctk.set_default_color_theme("blue")
 
+X_test = False;
+
 class App(ctk.CTk):
     def __init__(self):
         super().__init__()
@@ -147,7 +149,7 @@ class FrameInputs(ctk.CTkFrame):
 
         headers = ["inputNi", 'inputMn', 'inputCo', 'T (°C)', 'pKa1', '[acid] (M)', '[H2O2] (wt.%)', 'S/L (g/L)', 't (min)']
 
-        sheet = self.dfTable(lst_data, headers)
+        sheet = dfTable(self, lst_data, headers)
         sheet.grid(row=4, column=0, columnspan=2, sticky="nsew", pady=(0,20), padx=(20,20))
 
     # This function handles the logic behind the browse button
@@ -165,7 +167,8 @@ class FrameInputs(ctk.CTkFrame):
         if self.file_path:
             self.file_name = os.path.basename(self.file_path)  # Extract file name
             self.fileLabel.configure(text=f"{self.file_name}")
-
+            
+            global X_test
             X_test,_ = logic.importdata(self.file_path)
 
             # Try using a tksheet
@@ -177,23 +180,24 @@ class FrameInputs(ctk.CTkFrame):
             # sheet.grid(row=4, column=0, columnspan=2, sticky="nsew", pady=(0,20), padx=(20,20))
 
 
-    def dfTable(self, tableData, tableHeaders):
-        sheet = Sheet(self, data=tableData, header=tableHeaders)
-        sheet.enable_bindings()
-        sheet.disable_bindings('edit_cell')
-        sheet.disable_bindings('paste')
-        sheet.disable_bindings('cut')
-        sheet.disable_bindings('delete')
-        sheet.disable_bindings("rc_insert_column")
-        sheet.disable_bindings("rc_delete_column")
-        sheet.disable_bindings("rc_insert_row")
-        sheet.disable_bindings("rc_delete_row")
-        sheet.font(("Helvetica", 12, "normal"))
-        sheet.header_font(("Helvetica", 12, "bold"))
-        sheet.table_align("right")
-        sheet.index_align("center")
-        sheet.set_all_cell_sizes_to_text()
-        return sheet
+def dfTable(parent, tableData, tableHeaders):
+    """Function that handles displaying dataFrames for consistency"""
+    sheet = Sheet(parent, data=tableData, header=tableHeaders)
+    sheet.enable_bindings()
+    sheet.disable_bindings('edit_cell')
+    sheet.disable_bindings('paste')
+    sheet.disable_bindings('cut')
+    sheet.disable_bindings('delete')
+    sheet.disable_bindings("rc_insert_column")
+    sheet.disable_bindings("rc_delete_column")
+    sheet.disable_bindings("rc_insert_row")
+    sheet.disable_bindings("rc_delete_row")
+    sheet.font(("Helvetica", 12, "normal"))
+    sheet.header_font(("Helvetica", 12, "bold"))
+    sheet.table_align("right")
+    sheet.index_align("center")
+    sheet.set_all_cell_sizes_to_text()
+    return sheet
         
 class FramePreds(ctk.CTkFrame):
     def __init__(self, parent, controller):
@@ -201,8 +205,8 @@ class FramePreds(ctk.CTkFrame):
 
         # Setup the grid for this frame
         self.grid_columnconfigure((0,1), weight=1, uniform="group1")
-        self.grid_rowconfigure((0,1,2,3), weight=0)
-        self.grid_rowconfigure(4,weight=1)
+        self.grid_rowconfigure((0,1,2), weight=0)
+        self.grid_rowconfigure(3,weight=1)
 
         # Title of the window
         title = ctk.CTkLabel(self, text="ML RESULTS HERE", font=("Helvetica", 16, 'bold'))
@@ -213,9 +217,25 @@ class FramePreds(ctk.CTkFrame):
         predBtnLabel.grid(row=1, column=0, pady=(10,0), sticky='e')
         predButton = ctk.CTkButton(self, text='Generate', command=self.btnPredict)
         predButton.grid(row=1, column=1, pady=(10,0), padx=10, sticky='w')
-    
+
+        # Labels for the inputs and results tables
+        inputLabel = ctk.CTkLabel(self, text='Inputs')
+        inputLabel.grid(row=2, column=0, pady=10)
+        predLabel = ctk.CTkLabel(self, text='Predictions')
+        predLabel.grid(row=2, column=1, pady=10)
+
+
+
     def btnPredict(self):
-        print('Button pressed!')
+        print('Update table')
+        global X_test
+
+        # Inputs table (redundant with previous one)
+        lst_data = X_test.values.tolist()
+        headers = ["inputNi", 'inputMn', 'inputCo', 'T (°C)', 'pKa1', '[acid] (M)', '[H2O2] (wt.%)', 'S/L (g/L)', 't (min)']
+        sheet = dfTable(self, lst_data, headers)
+        # sheet.grid(row=4, column=0, columnspan=2, sticky="nsew", pady=(0,20), padx=(20,20))
+        sheet.grid(row=3, column=0, columnspan=2, padx=20, pady=20, sticky='nsew')
 
 
 
