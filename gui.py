@@ -115,27 +115,30 @@ class FrameInputs(ctk.CTkFrame):
         # Setup the grid for this frame
         self.grid_columnconfigure((0,1), weight=1, uniform="group1")
         # self.grid_columnconfigure(1, weight=0, uniform="group1")
-        self.grid_rowconfigure((0,2), weight=0)
-        self.grid_rowconfigure((1, 3, 4),weight=1)
+        self.grid_rowconfigure((0,1,2,3), weight=0)
+        self.grid_rowconfigure(4,weight=1)
 
         # Title of the window with some explanation
-        title = ctk.CTkLabel(self, text="These are the conditions for which the yields will be predicted")
+        title = ctk.CTkLabel(self, text="INPUTS TITLE HERE", font=("Helvetica", 16, 'bold'))
         title.grid(row=0, column=0, columnspan=2, pady=(10,0))
+
+        subtitle = ctk.CTkLabel(self, text="These are the conditions for which the yields will be predicted")
+        subtitle.grid(row=1, column=0, columnspan=2, pady=(10,0))
 
         # Label and button to allow picking of a test data file
         self.file_path = ""
         pick_file_button = ctk.CTkButton(
             master=self, 
             text="Browse...", 
-            command=self.pick_file)
-        pick_file_button.grid(row=1, column=1, sticky="w", padx=(5,5), pady=(10,))
+            command=lambda:self.pick_file(sheet))
+        pick_file_button.grid(row=2, column=1, sticky="w", padx=(5,5), pady=(10,))
 
         self.fileLabel = ctk.CTkLabel(self, text="No file selected.", font=("Helvetica", 14, 'bold'))
-        self.fileLabel.grid(row=1, column=0, sticky="e", padx=(5,5), pady=(10,))
+        self.fileLabel.grid(row=2, column=0, sticky="e", padx=(5,5), pady=(10,))
 
         # A simple label for the table
         tableLabel=ctk.CTkLabel(self, text="Conditions:", font=("Helvetica", 14, 'bold'))
-        tableLabel.grid(row=2, column=0, columnspan=2, sticky="sw", padx=10)
+        tableLabel.grid(row=3, column=0, columnspan=2, sticky="sw", padx=10)
 
         # Import sample data
         sampleTable,_ = logic.importdata("sample.xlsx")
@@ -147,10 +150,10 @@ class FrameInputs(ctk.CTkFrame):
         headers = ["inputNi", 'inputMn', 'inputCo', 'T (°C)', 'pKa1', '[acid] (M)', '[H2O2] (wt.%)', 'S/L (g/L)', 't (min)']
 
         sheet = self.dfTable(lst_data, headers)
-        sheet.grid(row=3, column=0, columnspan=2, sticky="nsew", pady=(0,20), padx=(20,20))
+        sheet.grid(row=4, column=0, columnspan=2, sticky="nsew", pady=(0,20), padx=(20,20))
 
     # This function handles the logic behind the browse button
-    def pick_file(self):
+    def pick_file(self, sheet):
         """Opens a file dialog for .xlsx files, stores the path, and updates the label."""
         # Get the directory of the current .py file
         default_directory = os.path.dirname(os.path.abspath(__file__))
@@ -169,10 +172,11 @@ class FrameInputs(ctk.CTkFrame):
 
             # Try using a tksheet
             lst_data = X_test.values.tolist()
-            headers = ["inputNi", 'inputMn', 'inputCo', 'T (°C)', 'pKa1', '[acid] (M)', '[H2O2] (wt.%)', 'S/L (g/L)', 't (min)']
-            
-            sheet = self.dfTable(lst_data, headers)
-            sheet.grid(row=3, column=0, columnspan=2, sticky="nsew", pady=(0,20), padx=(20,20))
+            # headers = ["inputNi", 'inputMn', 'inputCo', 'T (°C)', 'pKa1', '[acid] (M)', '[H2O2] (wt.%)', 'S/L (g/L)', 't (min)']
+            # Update table with new values
+            sheet.set_sheet_data(data=lst_data, reset_col_positions=False) 
+            # sheet = self.dfTable(lst_data, headers)
+            # sheet.grid(row=4, column=0, columnspan=2, sticky="nsew", pady=(0,20), padx=(20,20))
 
 
     def dfTable(self, tableData, tableHeaders):
@@ -193,8 +197,6 @@ class FrameInputs(ctk.CTkFrame):
         sheet.set_all_cell_sizes_to_text()
         return sheet
         
-
-
 class FramePreds(ctk.CTkFrame):
     def __init__(self, parent, controller):
         super().__init__(parent)
@@ -202,9 +204,10 @@ class FramePreds(ctk.CTkFrame):
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
-        title = ctk.CTkLabel(self,
-                             text="ML RESULTS HERE")
+        title = ctk.CTkLabel(self, text="ML RESULTS HERE")
         title.grid(row=0, column=0)
+
+    
 
 class FrameImpact(ctk.CTkFrame):
     def __init__(self, parent, controller):
