@@ -114,14 +114,12 @@ class FrameInputs(ctk.CTkFrame):
 
         # Setup the grid for this frame
         self.grid_columnconfigure((0,1), weight=1, uniform="group1")
-        # self.grid_columnconfigure(1, weight=0, uniform="group1")
         self.grid_rowconfigure((0,1,2,3), weight=0)
         self.grid_rowconfigure(4,weight=1)
 
         # Title of the window with some explanation
         title = ctk.CTkLabel(self, text="INPUTS TITLE HERE", font=("Helvetica", 16, 'bold'))
         title.grid(row=0, column=0, columnspan=2, pady=(10,0))
-
         subtitle = ctk.CTkLabel(self, text="These are the conditions for which the yields will be predicted")
         subtitle.grid(row=1, column=0, columnspan=2, pady=(10,0))
 
@@ -201,11 +199,25 @@ class FramePreds(ctk.CTkFrame):
     def __init__(self, parent, controller):
         super().__init__(parent)
 
-        self.grid_rowconfigure(0, weight=1)
-        self.grid_columnconfigure(0, weight=1)
+        # Setup the grid for this frame
+        self.grid_columnconfigure((0,1), weight=1, uniform="group1")
+        self.grid_rowconfigure((0,1,2,3), weight=0)
+        self.grid_rowconfigure(4,weight=1)
 
-        title = ctk.CTkLabel(self, text="ML RESULTS HERE")
-        title.grid(row=0, column=0)
+        # Title of the window
+        title = ctk.CTkLabel(self, text="ML RESULTS HERE", font=("Helvetica", 16, 'bold'))
+        title.grid(row=0, column=0, columnspan=2, pady=(10,0))
+
+        # Button to generate predictions
+        predBtnLabel = ctk.CTkLabel(self, text="Click this button to get predictions")
+        predBtnLabel.grid(row=1, column=0, pady=(10,0), sticky='e')
+        predButton = ctk.CTkButton(self, text='Generate', command=self.btnPredict)
+        predButton.grid(row=1, column=1, pady=(10,0), padx=10, sticky='w')
+    
+    def btnPredict(self):
+        print('Button pressed!')
+
+
 
     
 
