@@ -1,9 +1,12 @@
 import pandas as pd
 import numpy as np
 import joblib
+import os
 
 # UTILITIES
 def importdata(path):
+    print('Importing data from ', os.path.basename(path))
+
     # Load data using pandas
     trainData = pd.read_excel(path, header=0)
 
@@ -12,15 +15,15 @@ def importdata(path):
     y = trainData.loc[:,['xLi', 'xNi', 'xMn', 'xCo']]
 
     # Check data types and shapes
-    print('\n::: FEATURES :::')
+    # print('\n::: FEATURES :::')
     # print(X.head())
-    print("X shape:\t", X.shape)
-    print("X data type:\t", type(X))
+    print("Features (X):\t", X.shape)
+    # print("X data type:\t", type(X))
 
-    print('\n::: TARGETS :::')
+    # print('\n::: TARGETS :::')
     # print(y.head())
-    print("y shape:\t", y.shape)
-    print("y data type:\t", type(y))
+    print("Targets  (y):\t", y.shape)
+    # print("y data type:\t", type(y))
 
     return X, y
 

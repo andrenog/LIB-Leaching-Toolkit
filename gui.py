@@ -1,6 +1,7 @@
 import customtkinter as ctk 
 import logic
 import os
+import joblib
 
 from tkinter import filedialog
 from tksheet import Sheet
@@ -140,9 +141,6 @@ class FrameInputs(ctk.CTkFrame):
         tableLabel=ctk.CTkLabel(self, text="Conditions:", font=("Helvetica", 14, 'bold'))
         tableLabel.grid(row=3, column=0, columnspan=2, sticky="sw", padx=10)
 
-        # Import sample data
-        sampleTable,_ = logic.importdata("sample.xlsx")
-
         # Use a tksheet to display the input data
         lst_data = sampleTable.values.tolist()
         # headers = sampleTable.columns.tolist()
@@ -178,27 +176,7 @@ class FrameInputs(ctk.CTkFrame):
             sheet.set_sheet_data(data=lst_data, reset_col_positions=False) 
             # sheet = self.dfTable(lst_data, headers)
             # sheet.grid(row=4, column=0, columnspan=2, sticky="nsew", pady=(0,20), padx=(20,20))
-
-
-def dfTable(parent, tableData, tableHeaders):
-    """Function that handles displaying dataFrames for consistency"""
-    sheet = Sheet(parent, data=tableData, header=tableHeaders)
-    sheet.enable_bindings()
-    sheet.disable_bindings('edit_cell')
-    sheet.disable_bindings('paste')
-    sheet.disable_bindings('cut')
-    sheet.disable_bindings('delete')
-    sheet.disable_bindings("rc_insert_column")
-    sheet.disable_bindings("rc_delete_column")
-    sheet.disable_bindings("rc_insert_row")
-    sheet.disable_bindings("rc_delete_row")
-    sheet.font(("Helvetica", 12, "normal"))
-    sheet.header_font(("Helvetica", 12, "bold"))
-    sheet.table_align("right")
-    sheet.index_align("center")
-    sheet.set_all_cell_sizes_to_text()
-    return sheet
-        
+      
 class FramePreds(ctk.CTkFrame):
     def __init__(self, parent, controller):
         super().__init__(parent)
@@ -224,22 +202,23 @@ class FramePreds(ctk.CTkFrame):
         predLabel = ctk.CTkLabel(self, text='Predictions')
         predLabel.grid(row=2, column=1, pady=10)
 
-
-
     def btnPredict(self):
         print('Update table')
         global X_test
 
-        # Inputs table (redundant with previous one)
+        expTest_X  = logic.genFeatures(X_test, X_train)
+        y_test_minus_y_pred = mdl[0].predict(expTest_X)
+
+        y_pred_mu, y_pred_std = logic.twinPredictorHelper(X_train, X_test, y_train, y_test_minus_y_pred)
+
+
+
+        # Results table
         lst_data = X_test.values.tolist()
         headers = ["inputNi", 'inputMn', 'inputCo', 'T (°C)', 'pKa1', '[acid] (M)', '[H2O2] (wt.%)', 'S/L (g/L)', 't (min)']
         sheet = dfTable(self, lst_data, headers)
         # sheet.grid(row=4, column=0, columnspan=2, sticky="nsew", pady=(0,20), padx=(20,20))
         sheet.grid(row=3, column=0, columnspan=2, padx=20, pady=20, sticky='nsew')
-
-
-
-    
 
 class FrameImpact(ctk.CTkFrame):
     def __init__(self, parent, controller):
@@ -262,6 +241,35 @@ class FrameSummary(ctk.CTkFrame):
         title = ctk.CTkLabel(self,
                              text="SUMMARY/EXPORT HERE")
         title.grid(row=0, column=0)
+
+def dfTable(parent, tableData, tableHeaders):
+    """Function that handles displaying dataFrames for consistency"""
+    sheet = Sheet(parent, data=tableData, header=tableHeaders)
+    sheet.enable_bindings()
+    sheet.disable_bindings('edit_cell')
+    sheet.disable_bindings('paste')
+    sheet.disable_bindings('cut')
+    sheet.disable_bindings('delete')
+    sheet.disable_bindings("rc_insert_column")
+    sheet.disable_bindings("rc_delete_column")
+    sheet.disable_bindings("rc_insert_row")
+    sheet.disable_bindings("rc_delete_row")
+    sheet.font(("Helvetica", 12, "normal"))
+    sheet.header_font(("Helvetica", 12, "bold"))
+    sheet.table_align("right")
+    sheet.index_align("center")
+    sheet.set_all_cell_sizes_to_text()
+    return sheet
+  
+# Load pre-trained PD-GBR model
+mdl = joblib.load('model/PGBR.gz')
+
+# Load training data
+X_train = joblib.load('model/xtrain.gz')
+y_train = joblib.load('model/ytrain.gz')
+
+# Import sample data
+sampleTable,_ = logic.importdata("sample.xlsx")
 
 app = App()
 app.mainloop()
