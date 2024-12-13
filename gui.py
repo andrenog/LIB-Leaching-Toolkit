@@ -2,6 +2,7 @@ import customtkinter as ctk
 import logic
 import os
 import joblib
+import numpy as np
 
 from tkinter import filedialog
 from tksheet import Sheet
@@ -202,23 +203,34 @@ class FramePreds(ctk.CTkFrame):
         predLabel = ctk.CTkLabel(self, text='Predictions')
         predLabel.grid(row=2, column=1, pady=10)
 
-    def btnPredict(self):
-        print('Update table')
-        global X_test
+        # Inputs table
+        headers = ["inputNi", 'inputMn', 'inputCo', 'T (°C)', 'pKa1', '[acid] (M)', '[H2O2] (wt.%)', 'S/L (g/L)', 't (min)']
+        
+        lst_data = X_test.values.tolist()
+        # headers = X_test.columns.tolist()
+        self.inSheet = dfTable(self, lst_data, headers)
+        self.inSheet.grid(row=3, column=0, padx=(20,5), pady=(0,20), sticky='nsew')
 
+    def btnPredict(self):
+        print('* Calculate predictions')
+
+        #Update inputs table before anything else
+        lst_data = X_test.values.tolist()
+        self.inSheet.set_sheet_data(data=lst_data, reset_col_positions=False)
+        # global X_test
+
+        # Generate predictions
         expTest_X  = logic.genFeatures(X_test, X_train)
         y_test_minus_y_pred = mdl[0].predict(expTest_X)
 
         y_pred_mu, y_pred_std = logic.twinPredictorHelper(X_train, X_test, y_train, y_test_minus_y_pred)
 
+        # Display results table
+        lst_data = list(np.around(y_pred_mu.tolist(),4))
 
-
-        # Results table
-        lst_data = X_test.values.tolist()
-        headers = ["inputNi", 'inputMn', 'inputCo', 'T (°C)', 'pKa1', '[acid] (M)', '[H2O2] (wt.%)', 'S/L (g/L)', 't (min)']
+        headers = ['Li', 'Ni', 'Mn', 'Co']
         sheet = dfTable(self, lst_data, headers)
-        # sheet.grid(row=4, column=0, columnspan=2, sticky="nsew", pady=(0,20), padx=(20,20))
-        sheet.grid(row=3, column=0, columnspan=2, padx=20, pady=20, sticky='nsew')
+        sheet.grid(row=3, column=1, padx=(5,20), pady=(0,20), sticky='nsew')
 
 class FrameImpact(ctk.CTkFrame):
     def __init__(self, parent, controller):
@@ -254,8 +266,8 @@ def dfTable(parent, tableData, tableHeaders):
     sheet.disable_bindings("rc_delete_column")
     sheet.disable_bindings("rc_insert_row")
     sheet.disable_bindings("rc_delete_row")
-    sheet.font(("Helvetica", 12, "normal"))
-    sheet.header_font(("Helvetica", 12, "bold"))
+    # sheet.font(("Helvetica", 12, "normal"))
+    # sheet.header_font(("Helvetica", 12, "bold"))
     sheet.table_align("right")
     sheet.index_align("center")
     sheet.set_all_cell_sizes_to_text()
