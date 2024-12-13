@@ -9,7 +9,7 @@ from tksheet import Sheet
 ctk.set_appearance_mode("light")
 ctk.set_default_color_theme("blue")
 
-X_test = False;
+# X_test = False;
 
 class App(ctk.CTk):
     def __init__(self):
@@ -142,8 +142,8 @@ class FrameInputs(ctk.CTkFrame):
         tableLabel.grid(row=3, column=0, columnspan=2, sticky="sw", padx=10)
 
         # Use a tksheet to display the input data
-        lst_data = sampleTable.values.tolist()
-        # headers = sampleTable.columns.tolist()
+        lst_data = X_test.values.tolist()
+        # headers = X_test.columns.tolist()
 
         headers = ["inputNi", 'inputMn', 'inputCo', 'T (°C)', 'pKa1', '[acid] (M)', '[H2O2] (wt.%)', 'S/L (g/L)', 't (min)']
 
@@ -269,7 +269,7 @@ X_train = joblib.load('model/xtrain.gz')
 y_train = joblib.load('model/ytrain.gz')
 
 # Import sample data
-sampleTable,_ = logic.importdata("sample.xlsx")
+X_test,_ = logic.importdata("sample.xlsx")
 
 app = App()
 app.mainloop()
