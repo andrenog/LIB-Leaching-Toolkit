@@ -86,19 +86,19 @@ class NavigationFrame(ctk.CTkFrame):
 
     # These fucntions are called when the buttons above are pressed
     def optnEvent(self):
-        print("Options frame open")
+        print("\nOptions frame open")
         self.controller.optFrame.tkraise()
     def inputsEvent(self):
-        print("Inputs frame open")
+        print("\nInputs frame open")
         self.controller.inputsFrame.tkraise()
     def predEvent(self):
-        print("Predictions frame open")
+        print("\nPredictions frame open")
         self.controller.predsFrame.tkraise()
     def impactEvent(self):
-        print("Impacts frame open")
+        print("\nImpacts frame open")
         self.controller.impactFrame.tkraise()
     def summaryEvent(self):
-        print("Summary frame open")
+        print("\nSummary frame open")
         self.controller.summaryFrame.tkraise()
 
 # Setup the different windows that appear in the right side of the window
@@ -214,8 +214,16 @@ class FramePreds(ctk.CTkFrame):
         self.inSheet.grid(row=3, column=0, padx=(20,5), pady=(0,10), sticky='nsew')
 
         # Plot buttons
-        plotBtn = ctk.CTkButton(self, text="Plot x vs time", command=self.graph)
-        plotBtn.grid(row=4, column=0, padx=10, pady=(0,10))
+        plotLbl = ctk.CTkLabel(self, text='Plotting tools', font=("Helvetica", 12, 'bold'))
+        plotLbl.grid(row=4, column=0, columnspan=2, padx=10, pady=(0,5))
+        
+        # kinetics button
+        plotKinBtn = ctk.CTkButton(self, text="x vs time", command=self.pltKinetics)
+        plotKinBtn.grid(row=5, column=0, padx=10, pady=(0,10))
+
+        # barchart button
+        plotBarBtn = ctk.CTkButton(self, text="Barchart", command=self.pltBars)
+        plotBarBtn.grid(row=5, column=1, padx=10, pady=(0,10))
 
     def btnPredict(self):
         print('Calculate predictions')
@@ -239,19 +247,23 @@ class FramePreds(ctk.CTkFrame):
         sheet.grid(row=3, column=1, padx=(5,20), pady=(0,10), sticky='nsew')
 
         #Make results dataframe
+        global results
         results = X_test
         lb = ['Li', 'Ni', 'Mn', 'Co']
 
         for i in range(self.y_pred_mu.shape[1]):
             results[lb[i]] = self.y_pred_mu[:,i]
 
-        print(results.head)
-
-    def graph(self):
+    def pltKinetics(self): #UPDATE TO USE THE RESULTS DF
+        # Check if predictions have been generated
+        if not hasattr(self, 'y_pred_mu'):
+            print("Error: The predictions haven't been calculated yet")
+            return
+        
         xx = X_test.loc[:,'time']
         yy = self.y_pred_mu
         lb = ['Li', 'Ni', 'Mn', 'Co']
-
+        plt.close('Kinetics')
         plt.figure('Kinetics',figsize=(6, 4))  
 
         for i in range(yy.shape[1]):
@@ -261,7 +273,47 @@ class FramePreds(ctk.CTkFrame):
         plt.ylabel('Leaching')
         plt.ylim(0,1)
         plt.legend(loc='best')
+        print('Plot: kinetics scatter')
         plt.show()
+
+
+
+    def pltBars(self):
+        # TODO: Implement having all of the metals side by side - Optionally, print 4 subplots instead
+        global results
+        # Check if predictions have been generated
+        if not hasattr(self, 'y_pred_mu'):
+            print("Error: The predictions haven't been calculated yet")
+            return
+        
+        plt.close('Bars')
+        plt.figure('Bars',figsize=(6, 4)) 
+
+        xx = results.index
+        yy = results['Li']
+        plt.bar(xx, yy)
+        yy = results['Ni']
+        plt.bar(xx, yy)
+
+
+        
+        # lb = ['Li', 'Ni', 'Mn', 'Co']
+        # plt.close('Kinetics')
+        # plt.figure('Kinetics',figsize=(6, 4))  
+
+        # for i in range(yy.shape[1]):
+        #     plt.scatter(xx, yy[:,i], label=lb[i])
+
+        # plt.legend(loc='best')
+        plt.xticks(xx, xx)
+        # plt.xlabel("Index")
+        plt.ylabel("Values")
+        plt.ylim(0,1)
+        plt.title("Bar Chart of Values")
+        print('Plot: Bar chart')
+        plt.show()
+
+
         
 
 class FrameImpact(ctk.CTkFrame):
