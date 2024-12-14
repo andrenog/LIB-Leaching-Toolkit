@@ -29,7 +29,7 @@ def importdata(path):
 
 def genFeatures(X1,X2):
     # Code below closely follows the pseudocode in https://doi.org/10.1021/acs.jcim.1c00670
-    print('* EXPANDED FEATURES *')    
+    print('Expanding features')    
     # Input arrays   
     X1 = X1.to_numpy()
     X2 = X2.to_numpy()
@@ -63,7 +63,7 @@ def genFeatures(X1,X2):
     X1X2_combined = X1X2_combined.reshape(n1 * n2, -1)
 
     # Visual representation of reshaped array
-    print("Combined and reshaped array:", X1X2_combined.shape)
+    print("Combined + reshaped X:", X1X2_combined.shape)
     # print(X1X2_combined.shape)
     # print(type(X1X2_combined))
     # print(X1X2_combined[:3])
