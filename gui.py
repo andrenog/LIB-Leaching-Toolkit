@@ -1,8 +1,10 @@
-import customtkinter as ctk 
 import logic
 import os
 import joblib
+
+import customtkinter as ctk 
 import numpy as np
+import matplotlib.pyplot as plt
 
 from tkinter import filedialog
 from tksheet import Sheet
@@ -146,7 +148,7 @@ class FrameInputs(ctk.CTkFrame):
         lst_data = X_test.values.tolist()
         # headers = X_test.columns.tolist()
 
-        headers = ["inputNi", 'inputMn', 'inputCo', 'T (°C)', 'pKa1', '[acid] (M)', '[H2O2] (wt.%)', 'S/L (g/L)', 't (min)']
+        headers = ["inputNi", 'inputMn', 'inputCo', 'T (°C)', 'pKa1', '[acid] (M)', '[H2O2]', 'S/L (g/L)', 't (min)']
 
         sheet = dfTable(self, lst_data, headers)
         sheet.grid(row=4, column=0, columnspan=2, sticky="nsew", pady=(0,20), padx=(20,20))
@@ -184,7 +186,7 @@ class FramePreds(ctk.CTkFrame):
 
         # Setup the grid for this frame
         self.grid_columnconfigure((0,1), weight=1, uniform="group1")
-        self.grid_rowconfigure((0,1,2), weight=0)
+        self.grid_rowconfigure((0,1,2,4), weight=0)
         self.grid_rowconfigure(3,weight=1)
 
         # Title of the window
@@ -204,15 +206,19 @@ class FramePreds(ctk.CTkFrame):
         predLabel.grid(row=2, column=1, pady=10)
 
         # Inputs table
-        headers = ["inputNi", 'inputMn', 'inputCo', 'T (°C)', 'pKa1', '[acid] (M)', '[H2O2] (wt.%)', 'S/L (g/L)', 't (min)']
+        headers = ["inputNi", 'inputMn', 'inputCo', 'T (°C)', 'pKa1', '[acid] (M)', '[H2O2]', 'S/L (g/L)', 't (min)']
         
         lst_data = X_test.values.tolist()
         # headers = X_test.columns.tolist()
         self.inSheet = dfTable(self, lst_data, headers)
-        self.inSheet.grid(row=3, column=0, padx=(20,5), pady=(0,20), sticky='nsew')
+        self.inSheet.grid(row=3, column=0, padx=(20,5), pady=(0,10), sticky='nsew')
+
+        # Plot buttons
+        plotBtn = ctk.CTkButton(self, text="Plot x vs time", command=self.graph)
+        plotBtn.grid(row=4, column=0, padx=10, pady=(0,10))
 
     def btnPredict(self):
-        print('* Calculate predictions')
+        print('Calculate predictions')
 
         #Update inputs table before anything else
         lst_data = X_test.values.tolist()
@@ -223,14 +229,40 @@ class FramePreds(ctk.CTkFrame):
         expTest_X  = logic.genFeatures(X_test, X_train)
         y_test_minus_y_pred = mdl[0].predict(expTest_X)
 
-        y_pred_mu, y_pred_std = logic.twinPredictorHelper(X_train, X_test, y_train, y_test_minus_y_pred)
+        self.y_pred_mu, y_pred_std = logic.twinPredictorHelper(X_train, X_test, y_train, y_test_minus_y_pred)
 
         # Display results table
-        lst_data = list(np.around(y_pred_mu.tolist(),4))
+        lst_data = list(np.around(self.y_pred_mu.tolist(),4))
 
         headers = ['Li', 'Ni', 'Mn', 'Co']
         sheet = dfTable(self, lst_data, headers)
-        sheet.grid(row=3, column=1, padx=(5,20), pady=(0,20), sticky='nsew')
+        sheet.grid(row=3, column=1, padx=(5,20), pady=(0,10), sticky='nsew')
+
+        #Make results dataframe
+        results = X_test
+        lb = ['Li', 'Ni', 'Mn', 'Co']
+
+        for i in range(self.y_pred_mu.shape[1]):
+            results[lb[i]] = self.y_pred_mu[:,i]
+
+        print(results.head)
+
+    def graph(self):
+        xx = X_test.loc[:,'time']
+        yy = self.y_pred_mu
+        lb = ['Li', 'Ni', 'Mn', 'Co']
+
+        plt.figure('Kinetics',figsize=(6, 4))  
+
+        for i in range(yy.shape[1]):
+            plt.scatter(xx, yy[:,i], label=lb[i])
+
+        plt.xlabel('time (min)')
+        plt.ylabel('Leaching')
+        plt.ylim(0,1)
+        plt.legend(loc='best')
+        plt.show()
+        
 
 class FrameImpact(ctk.CTkFrame):
     def __init__(self, parent, controller):
