@@ -276,8 +276,6 @@ class FramePreds(ctk.CTkFrame):
         print('Plot: kinetics scatter')
         plt.show()
 
-
-
     def pltBars(self):
         # TODO: Implement having all of the metals side by side - Optionally, print 4 subplots instead
         global results
@@ -295,8 +293,6 @@ class FramePreds(ctk.CTkFrame):
         yy = results['Ni']
         plt.bar(xx, yy)
 
-
-        
         # lb = ['Li', 'Ni', 'Mn', 'Co']
         # plt.close('Kinetics')
         # plt.figure('Kinetics',figsize=(6, 4))  
@@ -305,16 +301,13 @@ class FramePreds(ctk.CTkFrame):
         #     plt.scatter(xx, yy[:,i], label=lb[i])
 
         # plt.legend(loc='best')
-        plt.xticks(xx, xx)
+        plt.xticks(xx, xx+1)
         # plt.xlabel("Index")
         plt.ylabel("Values")
         plt.ylim(0,1)
         plt.title("Bar Chart of Values")
         print('Plot: Bar chart')
         plt.show()
-
-
-        
 
 class FrameImpact(ctk.CTkFrame):
     def __init__(self, parent, controller):
