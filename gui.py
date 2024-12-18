@@ -4,6 +4,7 @@ import joblib
 
 import customtkinter as ctk 
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 
 from tkinter import filedialog
@@ -179,11 +180,15 @@ class FrameInputs(ctk.CTkFrame):
             sheet.set_sheet_data(data=lst_data, reset_col_positions=False) 
             # sheet = self.dfTable(lst_data, headers)
             # sheet.grid(row=4, column=0, columnspan=2, sticky="nsew", pady=(0,20), padx=(20,20))
-      
+
+            #Make results dataframe
+            global results
+            results = X_test
+   
 class FramePreds(ctk.CTkFrame):
     def __init__(self, parent, controller):
         super().__init__(parent)
-
+        
         # Setup the grid for this frame
         self.grid_columnconfigure((0,1), weight=1, uniform="group1")
         self.grid_rowconfigure((0,1,2,4), weight=0)
@@ -201,17 +206,18 @@ class FramePreds(ctk.CTkFrame):
 
         # Labels for the inputs and results tables
         inputLabel = ctk.CTkLabel(self, text='Inputs')
-        inputLabel.grid(row=2, column=0, pady=10)
-        predLabel = ctk.CTkLabel(self, text='Predictions')
-        predLabel.grid(row=2, column=1, pady=10)
+        inputLabel.grid(row=2, column=0, columnspan=2, pady=10, padx=10)
+        # predLabel = ctk.CTkLabel(self, text='Predictions')
+        # predLabel.grid(row=2, column=1, pady=10)
 
-        # Inputs table
+        # # Inputs table
         headers = ["inputNi", 'inputMn', 'inputCo', 'T (°C)', 'pKa1', '[acid] (M)', '[H2O2]', 'S/L (g/L)', 't (min)']
         
-        lst_data = X_test.values.tolist()
-        # headers = X_test.columns.tolist()
+        global results
+        lst_data = results.values.tolist()
+        # # headers = X_test.columns.tolist()
         self.inSheet = dfTable(self, lst_data, headers)
-        self.inSheet.grid(row=3, column=0, padx=(20,5), pady=(0,10), sticky='nsew')
+        self.inSheet.grid(row=3, column=0, columnspan=2, padx=20, pady=(0,10), sticky='nsew')
 
         # Plot buttons
         plotLbl = ctk.CTkLabel(self, text='Plotting tools', font=("Helvetica", 12, 'bold'))
@@ -227,6 +233,7 @@ class FramePreds(ctk.CTkFrame):
 
     def btnPredict(self):
         print('Calculate predictions')
+        global results, y_pred_std
 
         #Update inputs table before anything else
         lst_data = X_test.values.tolist()
@@ -237,22 +244,35 @@ class FramePreds(ctk.CTkFrame):
         expTest_X  = logic.genFeatures(X_test, X_train)
         y_test_minus_y_pred = mdl[0].predict(expTest_X)
 
-        self.y_pred_mu, y_pred_std = logic.twinPredictorHelper(X_train, X_test, y_train, y_test_minus_y_pred)
+        self.y_pred_mu, self.y_std = logic.twinPredictorHelper(X_train, X_test, y_train, y_test_minus_y_pred)
 
         # Display results table
-        lst_data = list(np.around(self.y_pred_mu.tolist(),4))
+        # lst_data = list(np.around(self.y_pred_mu.tolist(),4))
 
-        headers = ['Li', 'Ni', 'Mn', 'Co']
-        sheet = dfTable(self, lst_data, headers)
-        sheet.grid(row=3, column=1, padx=(5,20), pady=(0,10), sticky='nsew')
+        # headers = ['Li', 'Ni', 'Mn', 'Co']
+        # sheet = dfTable(self, lst_data, headers)
+        # sheet.grid(row=3, column=1, padx=(5,20), pady=(0,10), sticky='nsew')
 
-        #Make results dataframe
-        global results
-        results = X_test
+        #Update results dataframe with results
+
+        
+        # results = X_test
         lb = ['Li', 'Ni', 'Mn', 'Co']
 
         for i in range(self.y_pred_mu.shape[1]):
             results[lb[i]] = self.y_pred_mu[:,i]
+            y_pred_std[lb[i]] =self.y_std[:,i]
+
+
+        lst_data = results.round(4).values.tolist()
+        headers = ["inputNi", 'inputMn', 'inputCo', 'T (°C)', 'pKa1', '[acid] (M)', '[H2O2]', 'S/L (g/L)', 't (min)', 'Li', 'Ni', 'Mn', 'Co']
+        
+        # Redraw table
+        self.inSheet = dfTable(self, lst_data, headers)
+        self.inSheet.grid(row=3, column=0, columnspan=2, padx=20, pady=(0,10), sticky='nsew')
+
+        # Highlight results 
+        self.inSheet.highlight_columns([9, 10, 11, 12], bg='#fcf4e6')
 
     def pltKinetics(self): #UPDATE TO USE THE RESULTS DF
         # Check if predictions have been generated
@@ -277,36 +297,46 @@ class FramePreds(ctk.CTkFrame):
         plt.show()
 
     def pltBars(self):
-        # TODO: Implement having all of the metals side by side - Optionally, print 4 subplots instead
-        global results
+        global results, y_pred_std
         # Check if predictions have been generated
         if not hasattr(self, 'y_pred_mu'):
             print("Error: The predictions haven't been calculated yet")
             return
-        
-        plt.close('Bars')
-        plt.figure('Bars',figsize=(6, 4)) 
 
-        xx = results.index
-        yy = results['Li']
-        plt.bar(xx, yy)
-        yy = results['Ni']
-        plt.bar(xx, yy)
+        df = results
+        columns_to_plot = ['Li', 'Ni', 'Mn', 'Co']
+        # title="Grouped Bar Chart"
+        xlabel='Condition index'
+        ylabel='Leaching'
 
-        # lb = ['Li', 'Ni', 'Mn', 'Co']
-        # plt.close('Kinetics')
-        # plt.figure('Kinetics',figsize=(6, 4))  
+        n_groups = len(df)
+        bar_width = 0.8 / len(columns_to_plot)  # Adjust bar width based on the number of groups
+        index = np.arange(n_groups)
 
-        # for i in range(yy.shape[1]):
-        #     plt.scatter(xx, yy[:,i], label=lb[i])
+        fig, ax = plt.subplots(figsize=(6, 4))  # Adjust figure size as needed
 
-        # plt.legend(loc='best')
-        plt.xticks(xx, xx+1)
-        # plt.xlabel("Index")
-        plt.ylabel("Values")
-        plt.ylim(0,1)
-        plt.title("Bar Chart of Values")
-        print('Plot: Bar chart')
+        for i, column in enumerate(columns_to_plot):
+            values = df[column].values
+            position = index + i * bar_width
+            err = y_pred_std[column].values
+            rects = ax.bar(position, 
+                           values, 
+                           bar_width, 
+                           yerr=err,
+                           ecolor='0.3',
+                           capsize=2,
+                           label=column)
+
+        # Add some text for labels, title and axes ticks
+        ax.set_xlabel(xlabel)
+        ax.set_ylabel(ylabel)
+        # ax.set_title(title)
+        ax.set_ylim([0, 1])
+        ax.set_xticks(index + bar_width * (len(columns_to_plot) - 1) / 2) # Center the x ticks
+        ax.set_xticklabels(df.index+1)#, rotation=45, ha='right') # Rotate x-axis labels if needed
+        ax.legend()
+
+        fig.tight_layout() # Adjust layout to prevent labels from overlapping
         plt.show()
 
 class FrameImpact(ctk.CTkFrame):
@@ -359,6 +389,11 @@ y_train = joblib.load('model/ytrain.gz')
 
 # Import sample data
 X_test,_ = logic.importdata("sample.xlsx")
+results = X_test
+
+y_pred_std = pd.DataFrame()
+
+global y_pred_mu
 
 app = App()
 app.mainloop()
