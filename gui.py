@@ -13,12 +13,10 @@ from tksheet import Sheet
 ctk.set_appearance_mode("light")
 ctk.set_default_color_theme("blue")
 
-# X_test = False;
-
 class App(ctk.CTk):
     def __init__(self):
         super().__init__()
-        self.geometry("900x600")
+        self.geometry("960x600")
         self.title("LIB Recycling Helper")
         self.iconbitmap("icon.ico")
 
@@ -56,8 +54,8 @@ class NavigationFrame(ctk.CTkFrame):
 
         # Add buttons to access the different steps
         btnOptions = ctk.CTkButton(self, 
-                                        text="0. Options",
-                                        command=self.optnEvent,
+                                        text="0. Intro",
+                                        command=self.introEvent,
                                         font=("Helvetica", 14))
         btnOptions.grid(row=1, column=0, padx=(20, 20), pady=(10,10))
 
@@ -86,20 +84,20 @@ class NavigationFrame(ctk.CTkFrame):
         btnSummary.grid(row=5, column=0, padx=(20, 20), pady=(10,10))
 
     # These fucntions are called when the buttons above are pressed
-    def optnEvent(self):
-        print("\nOptions frame open")
+    def introEvent(self):
+        print("\nINTRODUCTION")
         self.controller.optFrame.tkraise()
     def inputsEvent(self):
-        print("\nInputs frame open")
+        print("\nINPUTS AND PREDICTIONS")
         self.controller.inputsFrame.tkraise()
     def predEvent(self):
-        print("\nPredictions frame open")
+        print("\nPREDICTIONS")
         self.controller.predsFrame.tkraise()
     def impactEvent(self):
-        print("\nImpacts frame open")
+        print("\nIMPACTS")
         self.controller.impactFrame.tkraise()
     def summaryEvent(self):
-        print("\nSummary frame open")
+        print("\nSUMMARY")
         self.controller.summaryFrame.tkraise()
 
 # Setup the different windows that appear in the right side of the window
@@ -114,23 +112,28 @@ class FrameOpt(ctk.CTkFrame):
                                        text="OPTIONS HERE")
         title.grid(row=0, column=0)
 
-# This window handles the files containing the conditions to predict
 class FrameInputs(ctk.CTkFrame):
     def __init__(self, parent, controller):
         super().__init__(parent)
+        # Setup the grid layout for this frame
+        self.grid_columnconfigure((0,1,2,3), weight=1, uniform=1)
+        self.grid_rowconfigure((0,1,2,4,5,6,7,9), weight=0)
+        self.grid_rowconfigure(3,weight=1)
 
-        # Setup the grid for this frame
-        self.grid_columnconfigure((0,1), weight=1, uniform="group1")
-        self.grid_rowconfigure((0,1,2,3), weight=0)
-        self.grid_rowconfigure(4,weight=1)
+        # LABEL: Title of the window
+        title = ctk.CTkLabel(self, text="INPUTS AND PREDICTIONS", font=("Helvetica", 16, 'bold'))
+        title.grid(row=0, column=0, columnspan=4, pady=(10,0))
 
-        # Title of the window with some explanation
-        title = ctk.CTkLabel(self, text="INPUTS TITLE HERE", font=("Helvetica", 16, 'bold'))
-        title.grid(row=0, column=0, columnspan=2, pady=(10,0))
-        subtitle = ctk.CTkLabel(self, text="These are the conditions for which the yields will be predicted")
-        subtitle.grid(row=1, column=0, columnspan=2, pady=(10,0))
-
-        # Label and button to allow picking of a test data file
+        # LABEL: Subtitle of the window
+        subtitle = ctk.CTkLabel(self, text="Predictions are updated when a new file is imported")
+        subtitle.grid(row=1, column=0, columnspan=4, pady=(10,0))
+        
+        ### FILE IMPORT AND TABLE GENERATION ###
+        # LABEL: Explain browse button
+        self.pickFileLbl = ctk.CTkLabel(self, text="Conditions to process:", font=("Helvetica", 14, 'bold'))
+        self.pickFileLbl.grid(row=2, column=0, sticky="e", padx=(5,5), pady=(10,))
+        
+        # BUTTON: File picking
         self.file_path = ""
         pick_file_button = ctk.CTkButton(
             master=self, 
@@ -138,52 +141,62 @@ class FrameInputs(ctk.CTkFrame):
             command=lambda:self.pick_file(sheet))
         pick_file_button.grid(row=2, column=1, sticky="w", padx=(5,5), pady=(10,))
 
-        self.fileLabel = ctk.CTkLabel(self, text="No file selected.", font=("Helvetica", 14, 'bold'))
-        self.fileLabel.grid(row=2, column=0, sticky="e", padx=(5,5), pady=(10,))
+        # LABEL: Current file name
+        self.fileNameLbl = ctk.CTkLabel(self, text='sample.txt')
+        self.fileNameLbl.grid(row=2, column=2, columnspan=2, sticky='w', padx=(5,5), pady=(10,))
 
-        # A simple label for the table
-        tableLabel=ctk.CTkLabel(self, text="Conditions:", font=("Helvetica", 14, 'bold'))
-        tableLabel.grid(row=3, column=0, columnspan=2, sticky="sw", padx=10)
+        # TKSHEET: Display conditions and preds from the default set
+        lst_data = genTable(X_test, y_pred_mu)
+        sheet = dfTable(self, lst_data, heathers)
+        sheet.grid(row=3, column=0, columnspan=4, sticky="nsew", pady=(0,20), padx=(20,20))
 
-        # Use a tksheet to display the input data
-        lst_data = X_test.values.tolist()
-        # headers = X_test.columns.tolist()
+        ### PLOTTING SECTION ###
+        # LABEL:   Introduce plots section
 
-        headers = ["inputNi", 'inputMn', 'inputCo', 'T (°C)', 'pKa1', '[acid] (M)', '[H2O2]', 'S/L (g/L)', 't (min)']
+        # LABEL:   Conditions vs YIELDS
+        # BUTTONS: Conditions vs YIELDS
 
-        sheet = dfTable(self, lst_data, headers)
-        sheet.grid(row=4, column=0, columnspan=2, sticky="nsew", pady=(0,20), padx=(20,20))
+        # LABEL:   Selectivities
+        # BUTTONS: Selectivities
+
+        # LABEL:   Stat. Differences
+        # BUTTONS: Stat. Differences
+
+        # BUTTON:  Export all plots to .png
 
     # This function handles the logic behind the browse button
     def pick_file(self, sheet):
         """Opens a file dialog for .xlsx files, stores the path, and updates the label."""
         # Get the directory of the current .py file
         default_directory = os.path.dirname(os.path.abspath(__file__))
+
+        # Open a file dialog to pick a new .xlsx
         self.file_path = filedialog.askopenfilename(
             initialdir=default_directory,
             title="Select Excel File containing the conditions for prediction",
             filetypes=(("Excel files", "*.xlsx *.xls *.ods"), ("All files", "*.*"))
         )
 
-        # Checks if file_path has been set. Only relevant in case the browse window is closed before picking a file.
+        # Checks if file_path has been set. 
+        # Only relevant in case the browse window is closed before picking a file.
         if self.file_path:
             self.file_name = os.path.basename(self.file_path)  # Extract file name
-            self.fileLabel.configure(text=f"{self.file_name}")
+            self.fileNameLbl.configure(text=f"{self.file_name}")
             
-            global X_test
+            # Import data
             X_test,_ = logic.importdata(self.file_path)
 
-            # Try using a tksheet
-            lst_data = X_test.values.tolist()
-            # headers = ["inputNi", 'inputMn', 'inputCo', 'T (°C)', 'pKa1', '[acid] (M)', '[H2O2] (wt.%)', 'S/L (g/L)', 't (min)']
-            # Update table with new values
-            sheet.set_sheet_data(data=lst_data, reset_col_positions=False) 
-            # sheet = self.dfTable(lst_data, headers)
-            # sheet.grid(row=4, column=0, columnspan=2, sticky="nsew", pady=(0,20), padx=(20,20))
+            # Compute predictions
+            y_pred_mu, y_pred_std = predict(X_test, X_train, y_train)
 
-            #Make results dataframe
-            global results
-            results = X_test
+            # Update table with the results
+            lst_data = genTable(X_test, y_pred_mu)
+
+            sheet = dfTable(self, lst_data, heathers)
+
+            # Update table with new values
+            sheet.grid(row=3, column=0, columnspan=4, sticky="nsew", pady=(0,20), padx=(20,20))
+
    
 class FramePreds(ctk.CTkFrame):
     def __init__(self, parent, controller):
@@ -197,7 +210,7 @@ class FramePreds(ctk.CTkFrame):
         # Title of the window
         title = ctk.CTkLabel(self, text="ML RESULTS HERE", font=("Helvetica", 16, 'bold'))
         title.grid(row=0, column=0, columnspan=2, pady=(10,0))
-
+'''
         # Button to generate predictions
         predBtnLabel = ctk.CTkLabel(self, text="Click this button to get predictions")
         predBtnLabel.grid(row=1, column=0, pady=(10,0), sticky='e')
@@ -337,7 +350,7 @@ class FramePreds(ctk.CTkFrame):
         ax.legend()
 
         fig.tight_layout() # Adjust layout to prevent labels from overlapping
-        plt.show()
+        plt.show()'''
 
 class FrameImpact(ctk.CTkFrame):
     def __init__(self, parent, controller):
@@ -378,10 +391,42 @@ def dfTable(parent, tableData, tableHeaders):
     sheet.table_align("right")
     sheet.index_align("center")
     sheet.set_all_cell_sizes_to_text()
+
+    # Highlight results 
+    sheet.highlight_columns([9, 10, 11, 12], bg='#fcf4e6')
     return sheet
-  
+
+def predict(X_test: pd.DataFrame, X_train: pd.DataFrame, y_train: pd.DataFrame) -> pd.DataFrame:
+    """Outputs the predction average and standard dev as a DataFrame"""
+    print("Processing data")
+    expTest_X  = logic.genFeatures(X_test, X_train)
+    y_test_minus_y_pred = mdl.predict(expTest_X)
+
+    y_pred_mu, y_pred_std = logic.twinPredictorHelper(X_train, X_test, y_train, y_test_minus_y_pred)
+
+    cols = ['Li', 'Ni', 'Mn', 'Co']
+
+    y_pred_mu  = pd.DataFrame(data=y_pred_mu,  columns=cols)
+    y_pred_std = pd.DataFrame(data=y_pred_std, columns=cols)
+
+    return y_pred_mu, y_pred_std
+
+def genTable(X_test: pd.DataFrame, y_pred_mu: pd.DataFrame) -> list:
+    """Generates the data to be displayed in tables by combining the conditions and predicted yields"""
+    temp = X_test.copy()
+    cols_2_copy = ['Li', 'Ni', 'Mn', 'Co']
+
+    for i, col in enumerate(cols_2_copy):
+        temp[col] = y_pred_mu[col]
+
+    # Use a tksheet to display the data
+    temp = np.around(temp, 4)
+    lst_data = temp.values.tolist()
+
+    return lst_data
+
 # Load pre-trained PD-GBR model
-mdl = joblib.load('model/PGBR.gz')
+mdl,_,_ = joblib.load('model/PGBR.gz')
 
 # Load training data
 X_train = joblib.load('model/xtrain.gz')
@@ -389,11 +434,13 @@ y_train = joblib.load('model/ytrain.gz')
 
 # Import sample data
 X_test,_ = logic.importdata("sample.xlsx")
-results = X_test
 
-y_pred_std = pd.DataFrame()
+# Process the sample data
+y_pred_mu, y_pred_std = predict(X_test, X_train, y_train)
 
-global y_pred_mu
+heathers = ['inputNi', 'inputMn', 'inputCo', 'T (°C)', 'pKa1', '[acid] (M)', 
+            '[H2O2]', 'S/L (g/L)', 't (min)', 'Li', 'Ni', 'Mn', 'Co']
+
 
 app = App()
 app.mainloop()
