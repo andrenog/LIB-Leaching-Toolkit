@@ -131,16 +131,16 @@ class FrameInputs(ctk.CTkFrame):
         ### FILE IMPORT AND TABLE GENERATION ###
         # LABEL: Explain browse button
         self.pickFileLbl = ctk.CTkLabel(self, text="Conditions to process:", font=("Helvetica", 14, 'bold'))
-        self.pickFileLbl.grid(row=2, column=0, sticky="e", padx=(5,5), pady=(10,))
+        self.pickFileLbl.grid(row=2, column=0, sticky="nesw", pady=10, padx=10)
         
         # BUTTON: File picking
         self.file_path = ""
         pick_file_button = ctk.CTkButton(self, text="Browse...", command=lambda:self.pick_file(sheet))
-        pick_file_button.grid(row=2, column=1, sticky="w", padx=(5,5), pady=(10,))
+        pick_file_button.grid(row=2, column=1, padx=(5,5), pady=(10,))
 
         # LABEL: Current file name
         self.fileNameLbl = ctk.CTkLabel(self, text='sample.txt')
-        self.fileNameLbl.grid(row=2, column=2, columnspan=2, sticky='w', padx=(5,5), pady=(10,))
+        self.fileNameLbl.grid(row=2, column=2, columnspan=2, sticky='w', pady=10, padx=10)
 
         # TKSHEET: Display conditions and preds from the default set
         lst_data = genTable(X_test, y_pred_mu)
@@ -216,7 +216,7 @@ class FrameInputs(ctk.CTkFrame):
         if self.file_path:
             self.file_name = os.path.basename(self.file_path)  # Extract file name
             self.fileNameLbl.configure(text=f"{self.file_name}")
-            
+            global X_test, y_pred_mu, y_pred_std
             # Import data
             X_test,_ = logic.importdata(self.file_path)
 
@@ -244,7 +244,7 @@ class FramePreds(ctk.CTkFrame):
         # Title of the window
         title = ctk.CTkLabel(self, text="ML RESULTS HERE", font=("Helvetica", 16, 'bold'))
         title.grid(row=0, column=0, columnspan=2, pady=(10,0))
-'''
+    '''
         # Button to generate predictions
         predBtnLabel = ctk.CTkLabel(self, text="Click this button to get predictions")
         predBtnLabel.grid(row=1, column=0, pady=(10,0), sticky='e')
@@ -461,6 +461,22 @@ def genTable(X_test: pd.DataFrame, y_pred_mu: pd.DataFrame) -> list:
 
 def pltTime():
     print('* Plot: yield vs time scatter')
+
+    xx = X_test['time']
+    yy = y_pred_mu
+    lb = ['Li', 'Ni', 'Mn', 'Co']
+
+    plt.close('Kinetics')
+    plt.figure('Kinetics',figsize=(6, 4))  
+
+    for i,col in enumerate(lb):
+        plt.scatter(xx, yy[col], label=lb[i])
+
+    plt.xlabel('time (min)')
+    plt.ylabel('Leaching')
+    plt.ylim(0,1)
+    plt.legend(loc='best')
+    plt.show()
 
 def pltTemp():
     print('* Plot: yield vs temperature scatter')
