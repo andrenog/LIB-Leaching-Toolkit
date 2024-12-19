@@ -117,7 +117,7 @@ class FrameInputs(ctk.CTkFrame):
         super().__init__(parent)
         # Setup the grid layout for this frame
         self.grid_columnconfigure((0,1,2,3), weight=1, uniform=1)
-        self.grid_rowconfigure((0,1,2,4,5,6,7,9), weight=0)
+        self.grid_rowconfigure((0,1,2,4,5,6,7,8,9), weight=0)
         self.grid_rowconfigure(3,weight=1)
 
         # LABEL: Title of the window
@@ -135,10 +135,7 @@ class FrameInputs(ctk.CTkFrame):
         
         # BUTTON: File picking
         self.file_path = ""
-        pick_file_button = ctk.CTkButton(
-            master=self, 
-            text="Browse...", 
-            command=lambda:self.pick_file(sheet))
+        pick_file_button = ctk.CTkButton(self, text="Browse...", command=lambda:self.pick_file(sheet))
         pick_file_button.grid(row=2, column=1, sticky="w", padx=(5,5), pady=(10,))
 
         # LABEL: Current file name
@@ -148,21 +145,58 @@ class FrameInputs(ctk.CTkFrame):
         # TKSHEET: Display conditions and preds from the default set
         lst_data = genTable(X_test, y_pred_mu)
         sheet = dfTable(self, lst_data, heathers)
-        sheet.grid(row=3, column=0, columnspan=4, sticky="nsew", pady=(0,20), padx=(20,20))
+        sheet.grid(row=3, column=0, columnspan=4, sticky="nsew", pady=5, padx=20)
 
         ### PLOTTING SECTION ###
-        # LABEL:   Introduce plots section
-
         # LABEL:   Conditions vs YIELDS
+        yieldsLbl = ctk.CTkLabel(self, text='Yields:', font=("Helvetica", 14, 'bold'))
+        yieldsLbl.grid(row=4, column=0, sticky='nsew', pady=10, padx=10)
+
         # BUTTONS: Conditions vs YIELDS
+        timeBtn = ctk.CTkButton(self, text='x vs time', command=pltTime)
+        timeBtn.grid(row=4, column=1, pady=10, padx=10)
+
+        tempBtn = ctk.CTkButton(self, text='x vs Temp', command=pltTemp)
+        tempBtn.grid(row=4, column=2, pady=10, padx=10)
+
+        SLBtn   = ctk.CTkButton(self, text='x vs S/L',  command=pltSL)
+        SLBtn.grid(row=4, column=3, pady=10, padx=10)
+
+        acidCBtn = ctk.CTkButton(self, text='x vs [acid]', command=pltAcidC)
+        acidCBtn.grid(row=5, column=1, pady=5, padx=10)
+
+        peroxBtn = ctk.CTkButton(self, text='x vs [H2O2]', command=pltPerox)
+        peroxBtn.grid(row=5, column=2, pady=5, padx=10)
+
+        acidTypeBtn = ctk.CTkButton(self, text='x vs acid', command=pltAcidType)
+        acidTypeBtn.grid(row=5, column=3, pady=5, padx=10)
 
         # LABEL:   Selectivities
+        selctLbl = ctk.CTkLabel(self, text='Selectivities:', font=("Helvetica", 14, 'bold'))
+        selctLbl.grid(row=6, column=0, sticky='nsew', pady=10, padx=10)
+
         # BUTTONS: Selectivities
+        heatBtn = ctk.CTkButton(self, text='Heatmap', command=hmapSelect)
+        heatBtn.grid(row=6, column=1, pady=5, padx=10)
+
+        enrichBtn = ctk.CTkButton(self, text='Enrichment factor', command=pltEF)
+        enrichBtn.grid(row=6, column=2, pady=5, padx=10)
 
         # LABEL:   Stat. Differences
+        diffsLbl = ctk.CTkLabel(self, text='Statistical differences:', font=("Helvetica", 14, 'bold'))
+        diffsLbl.grid(row=7, column=0, sticky='nsew', pady=10, padx=10)
+
         # BUTTONS: Stat. Differences
+        diffsBtn =  ctk.CTkButton(self, text='Compare conditions', command = pltStatDiff)
+        diffsBtn.grid(row=7, column=1, pady=5, padx=10)
+
+        # LABEL:  Export all plots to .png
+        saveAllLbl = ctk.CTkLabel(self, text='Export all as PNG:', font=("Helvetica", 14, 'bold'))
+        saveAllLbl.grid(row=7, column=2, sticky='nsew', pady=10, padx=10)
 
         # BUTTON:  Export all plots to .png
+        saveAllBtn = ctk.CTkButton(self, text='Save all', command=saveAllPlts)
+        saveAllBtn.grid(row=7, column=3, pady=5, padx=10)
 
     # This function handles the logic behind the browse button
     def pick_file(self, sheet):
@@ -192,12 +226,12 @@ class FrameInputs(ctk.CTkFrame):
             # Update table with the results
             lst_data = genTable(X_test, y_pred_mu)
 
+            sheet.destroy()
             sheet = dfTable(self, lst_data, heathers)
 
             # Update table with new values
-            sheet.grid(row=3, column=0, columnspan=4, sticky="nsew", pady=(0,20), padx=(20,20))
+            sheet.grid(row=3, column=0, columnspan=4, sticky="nsew", pady=0, padx=20)
 
-   
 class FramePreds(ctk.CTkFrame):
     def __init__(self, parent, controller):
         super().__init__(parent)
@@ -374,8 +408,8 @@ class FrameSummary(ctk.CTkFrame):
                              text="SUMMARY/EXPORT HERE")
         title.grid(row=0, column=0)
 
-def dfTable(parent, tableData, tableHeaders):
-    """Function that handles displaying dataFrames for consistency"""
+def dfTable(parent, tableData: list, tableHeaders: list) -> Sheet:
+    """Function that formats TKSheets for displaying conditions and yields"""
     sheet = Sheet(parent, data=tableData, header=tableHeaders)
     sheet.enable_bindings()
     sheet.disable_bindings('edit_cell')
@@ -393,11 +427,11 @@ def dfTable(parent, tableData, tableHeaders):
     sheet.set_all_cell_sizes_to_text()
 
     # Highlight results 
-    sheet.highlight_columns([9, 10, 11, 12], bg='#fcf4e6')
+    sheet.highlight_columns([9, 10, 11, 12], bg='#e2f2e3')
     return sheet
 
 def predict(X_test: pd.DataFrame, X_train: pd.DataFrame, y_train: pd.DataFrame) -> pd.DataFrame:
-    """Outputs the predction average and standard dev as a DataFrame"""
+    """Outputs the prediction average and standard dev as Pandas DataFrames"""
     print("Processing data")
     expTest_X  = logic.genFeatures(X_test, X_train)
     y_test_minus_y_pred = mdl.predict(expTest_X)
@@ -424,6 +458,36 @@ def genTable(X_test: pd.DataFrame, y_pred_mu: pd.DataFrame) -> list:
     lst_data = temp.values.tolist()
 
     return lst_data
+
+def pltTime():
+    print('* Plot: yield vs time scatter')
+
+def pltTemp():
+    print('* Plot: yield vs temperature scatter')
+
+def pltSL():
+    print('* Plot: yield vs S/L scatter')
+
+def pltAcidC():
+    print('* Plot: yield vs [acid] scatter')
+
+def pltPerox():
+    print('* Plot: yield vs [H2O2] scatter')
+
+def pltAcidType():
+    print('* Plot: yield vs acid type bar chart')
+
+def hmapSelect():
+    print('* Plot: Heatmap of selectivities')
+
+def pltEF():
+    print('* Plot: Enrichment factor bar chart')
+
+def pltStatDiff():
+    print('* Plot: Statistical differences')
+
+def saveAllPlts():
+    print('> Save all plots as .png')
 
 # Load pre-trained PD-GBR model
 mdl,_,_ = joblib.load('model/PGBR.gz')
