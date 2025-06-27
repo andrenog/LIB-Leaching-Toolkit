@@ -1693,15 +1693,15 @@ def pltEI(save=False):
 
 def pltCosts(save=False):
     '''
-    Plot the costs of reagents and heating per kg of metal leached.
+    Plot the costs of reagents and heating per kg of metal leached as a stacked bar plot.
     '''
     if not save:
-        print('* PLOT: Cost bar chart')
+        print('* PLOT: Cost stacked bar chart')
 
     title = 'Costs'
 
     plt.close(title)
-    fig, axes = plt.subplots(1, 3, figsize=(15, 5), num=title)
+    plt.figure(title, figsize=(10, 6))
 
     try:
         costs['Conditions'] = costs.index
@@ -1710,16 +1710,20 @@ def pltCosts(save=False):
         plt.close(title)
         return
 
-    # Plot acid costs per kg leached
-    sns.barplot(x='Conditions', y='Acid Cost, €/kg', data=costs, ax=axes[0])
-    axes[0].set_title('Acid cost per kg leached')
+    # Prepare data for stacked bar plot
+    cost_components = ['Acid Cost, €/kg', 'Mixing, €/kg', 'Heating, €/kg']
+    bottom = np.zeros(len(costs))
+    colors = ['#4c72b0', '#55a868', '#c44e52']
+    labels = ['Acid', 'Mixing', 'Heating']
 
-    sns.barplot(x='Conditions', y='Mixing, €/kg', data=costs, ax=axes[1])
-    axes[1].set_title('Mixing cost per kg leached')
+    for i, (comp, color, label) in enumerate(zip(cost_components, colors, labels)):
+        plt.bar(costs['Conditions'], costs[comp], bottom=bottom, color=color, label=label)
+        bottom += costs[comp].values
 
-    sns.barplot(x='Conditions', y='Heating, €/kg', data=costs, ax=axes[2])
-    axes[2].set_title('Heating cost per kg leached')
-
+    plt.xlabel('Conditions')
+    plt.ylabel('Cost per kg leached (€)')
+    plt.title('Costs per kg Metal Leached')
+    plt.legend()
     plt.tight_layout()
 
     if save:
