@@ -876,154 +876,140 @@ model_configurations = [
         'drop_cols': None,
         'comments': 'RF using all features.',
         'subfolder': 'RF'
-    },]
-
-# model_configurations = [
-#     {
-#         'name': 'RF_full',
-#         'model_func': RF_model,
-#         'X_train': X_train,
-#         'X_test': X_test,
-#         'y_train': y_train,
-#         'y_test': y_test,
-#         'save_path': '',
-#         'drop_cols': None,
-#         'comments': 'RF using all features.',
-#         'subfolder': 'RF'
-#     },
-#     {
-#         'name': 'GBR_full',
-#         'model_func': GBR_model,
-#         'X_train': X_train,
-#         'X_test': X_test,
-#         'y_train': y_train,
-#         'y_test': y_test,
-#         'save_path': '',
-#         'drop_cols': None,
-#         'comments': 'GBR using all features.',
-#         'subfolder': 'GBR'
-#     },
-#     {
-#         'name': 'ANN_full',
-#         'model_func': MLP_model,
-#         'X_train': X_train_filledNaN,
-#         'X_test': X_test_filledNaN,
-#         'y_train': y_train,
-#         'y_test': y_test,
-#         'save_path': '',
-#         'drop_cols': None,
-#         'comments': "ANN with missing values filled with median \n(ANN don't support NaN values)",
-#         "subfolder": "ANN"
-#     },
-#     {
-#         'name': 'ANN_no_pKa_sol',
-#         'model_func': MLP_model,
-#         'X_train': X_train,
-#         'X_test': X_test,
-#         'y_train': y_train,
-#         'y_test': y_test,
-#         'save_path': '',
-#         'drop_cols': ['pKa2', 'pKa3', 'sLi', 'sNi', 'sMn', 'sCo'],
-#         'comments': "ANN dropping extra pKas, solubilities \n(ANN don't support NaN values)",
-#         "subfolder": "ANN"
-#     },
-#     {   
-#         'name': 'PD-ANN_full',
-#         'model_func': PNN_model,
-#         'X_train': X_train_filledNaN,
-#         'X_test': X_test_filledNaN,
-#         'y_train': y_train,
-#         'y_test': y_test,
-#         'save_path': '',
-#         'drop_cols': None,
-#         'comments': "PD-ANN with missing values filled with median \n(ANN don't support NaN values)",
-#         'subfolder': 'PD-ANN'
-#     },
-#     {   
-#         'name': 'PD-ANN_no_pKa_sol',
-#         'model_func': PNN_model,
-#         'X_train': X_train,
-#         'X_test': X_test,
-#         'y_train': y_train,
-#         'y_test': y_test,
-#         'save_path': '',
-#         'drop_cols': ['pKa2', 'pKa3', 'sLi', 'sNi', 'sMn', 'sCo'],
-#         'comments': "PD-ANN dropping extra pKas, solubilities \n(ANN don't support NaN values)",
-#         'subfolder': 'PD-ANN'
-#     },
-#     {
-#         'name': 'PD-GBR_full',
-#         'model_func': PGBR_model,
-#         'X_train': X_train,
-#         'X_test': X_test,
-#         'y_train': y_train,
-#         'y_test': y_test,
-#         'save_path': '',
-#         'drop_cols': None,
-#         'comments': 'PD-GBR using all features.',
-#         'subfolder': 'PD-GBR'
-#     },
-#     {
-#         'name': 'PD-GBR_no_pKa',
-#         'model_func': PGBR_model,
-#         'X_train': X_train,
-#         'X_test': X_test,
-#         'y_train': y_train,
-#         'y_test': y_test,
-#         'save_path': '',
-#         'drop_cols': ['pKa2', 'pKa3'],
-#         'comments': 'PD-GBR dropping pKa2, pKa3',
-#         'subfolder': 'PD-GBR'
-#     },
-#     {
-#         'name': 'PD-GBR_no_sol',
-#         'model_func': PGBR_model,
-#         'X_train': X_train,
-#         'X_test': X_test,
-#         'y_train': y_train,
-#         'y_test': y_test,
-#         'save_path': '',
-#         'drop_cols': ['sLi', 'sNi', 'sMn', 'sCo'],
-#         'comments': 'PD-GBR dropping solubilities',
-#         'subfolder': 'PD-GBR'
-#     },
-#     {
-#         'name': 'PD-GBR_no_lipinski',
-#         'model_func': PGBR_model,
-#         'X_train': X_train,
-#         'X_test': X_test,
-#         'y_train': y_train,
-#         'y_test': y_test,
-#         'save_path': '',
-#         'drop_cols': ['logP', 'hba', 'hbd', 'Mr_acid', 'tpsa'],
-#         'comments': 'PD-GBR dropping logP, HBA, HBD, MW, TPSA',
-#         'subfolder': 'PD-GBR'
-#     },
-#     {
-#         'name': 'PD-GBR_no_charge_pol',
-#         'model_func': PGBR_model,
-#         'X_train': X_train,
-#         'X_test': X_test,
-#         'y_train': y_train,
-#         'y_test': y_test,
-#         'save_path': '',
-#         'drop_cols': ['max_partial_charge', 'min_partial_charge', 'molar_refractivity'],
-#         'comments': 'PD-GBR dropping max/min partial charge and molar refractivity',
-#         'subfolder': 'PD-GBR'
-#     },
-#     {
-#         'name': 'PD-GBR_no_FG',
-#         'model_func': PGBR_model,
-#         'X_train': X_train,
-#         'X_test': X_test,
-#         'y_train': y_train,
-#         'y_test': y_test,
-#         'save_path': '',
-#         'drop_cols': ['fr_COO', 'fr_C_O', 'fr_NH0', 'fr_NH2', 'fr_halogen', 'fr_Al_OH', 'fr_S'],
-#         'comments': 'PD-GBR dropping functional groups \n(COO, C_O, NH0, NH2, halogen, Al_OH, S)',
-#         'subfolder': 'PD-GBR'
-#     }
-# ]
+    },
+    {
+        'name': 'GBR_full',
+        'model_func': GBR_model,
+        'X_train': X_train,
+        'X_test': X_test,
+        'y_train': y_train,
+        'y_test': y_test,
+        'save_path': '',
+        'drop_cols': None,
+        'comments': 'GBR using all features.',
+        'subfolder': 'GBR'
+    },
+    {
+        'name': 'ANN_full',
+        'model_func': MLP_model,
+        'X_train': X_train_filledNaN,
+        'X_test': X_test_filledNaN,
+        'y_train': y_train,
+        'y_test': y_test,
+        'save_path': '',
+        'drop_cols': None,
+        'comments': "ANN with missing values filled with median \n(ANN don't support NaN values)",
+        "subfolder": "ANN"
+    },
+    {
+        'name': 'ANN_no_pKa_sol',
+        'model_func': MLP_model,
+        'X_train': X_train,
+        'X_test': X_test,
+        'y_train': y_train,
+        'y_test': y_test,
+        'save_path': '',
+        'drop_cols': ['pKa2', 'pKa3', 'sLi', 'sNi', 'sMn', 'sCo'],
+        'comments': "ANN dropping extra pKas, solubilities \n(ANN don't support NaN values)",
+        "subfolder": "ANN"
+    },
+    {   
+        'name': 'PD-ANN_full',
+        'model_func': PNN_model,
+        'X_train': X_train_filledNaN,
+        'X_test': X_test_filledNaN,
+        'y_train': y_train,
+        'y_test': y_test,
+        'save_path': '',
+        'drop_cols': None,
+        'comments': "PD-ANN with missing values filled with median \n(ANN don't support NaN values)",
+        'subfolder': 'PD-ANN'
+    },
+    {   
+        'name': 'PD-ANN_no_pKa_sol',
+        'model_func': PNN_model,
+        'X_train': X_train,
+        'X_test': X_test,
+        'y_train': y_train,
+        'y_test': y_test,
+        'save_path': '',
+        'drop_cols': ['pKa2', 'pKa3', 'sLi', 'sNi', 'sMn', 'sCo'],
+        'comments': "PD-ANN dropping extra pKas, solubilities \n(ANN don't support NaN values)",
+        'subfolder': 'PD-ANN'
+    },
+    {
+        'name': 'PD-GBR_full',
+        'model_func': PGBR_model,
+        'X_train': X_train,
+        'X_test': X_test,
+        'y_train': y_train,
+        'y_test': y_test,
+        'save_path': '',
+        'drop_cols': None,
+        'comments': 'PD-GBR using all features.',
+        'subfolder': 'PD-GBR'
+    },
+    {
+        'name': 'PD-GBR_no_pKa',
+        'model_func': PGBR_model,
+        'X_train': X_train,
+        'X_test': X_test,
+        'y_train': y_train,
+        'y_test': y_test,
+        'save_path': '',
+        'drop_cols': ['pKa2', 'pKa3'],
+        'comments': 'PD-GBR dropping pKa2, pKa3',
+        'subfolder': 'PD-GBR'
+    },
+    {
+        'name': 'PD-GBR_no_sol',
+        'model_func': PGBR_model,
+        'X_train': X_train,
+        'X_test': X_test,
+        'y_train': y_train,
+        'y_test': y_test,
+        'save_path': '',
+        'drop_cols': ['sLi', 'sNi', 'sMn', 'sCo'],
+        'comments': 'PD-GBR dropping solubilities',
+        'subfolder': 'PD-GBR'
+    },
+    {
+        'name': 'PD-GBR_no_lipinski',
+        'model_func': PGBR_model,
+        'X_train': X_train,
+        'X_test': X_test,
+        'y_train': y_train,
+        'y_test': y_test,
+        'save_path': '',
+        'drop_cols': ['logP', 'hba', 'hbd', 'Mr_acid', 'tpsa'],
+        'comments': 'PD-GBR dropping logP, HBA, HBD, MW, TPSA',
+        'subfolder': 'PD-GBR'
+    },
+    {
+        'name': 'PD-GBR_no_charge_pol',
+        'model_func': PGBR_model,
+        'X_train': X_train,
+        'X_test': X_test,
+        'y_train': y_train,
+        'y_test': y_test,
+        'save_path': '',
+        'drop_cols': ['max_partial_charge', 'min_partial_charge', 'molar_refractivity'],
+        'comments': 'PD-GBR dropping max/min partial charge and molar refractivity',
+        'subfolder': 'PD-GBR'
+    },
+    {
+        'name': 'PD-GBR_no_FG',
+        'model_func': PGBR_model,
+        'X_train': X_train,
+        'X_test': X_test,
+        'y_train': y_train,
+        'y_test': y_test,
+        'save_path': '',
+        'drop_cols': ['fr_COO', 'fr_C_O', 'fr_NH0', 'fr_NH2', 'fr_halogen', 'fr_Al_OH', 'fr_S'],
+        'comments': 'PD-GBR dropping functional groups \n(COO, C_O, NH0, NH2, halogen, Al_OH, S)',
+        'subfolder': 'PD-GBR'
+    }
+]
 
 trained_models = {}
 
