@@ -42,3 +42,8 @@ Desktop.ini
 *.log
 *.db
 *.sqlite3
+
+# PyInstaller files
+/dist/
+/build/
+*.spec

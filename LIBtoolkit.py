@@ -34,7 +34,7 @@ class App(ctk.CTk):
         super().__init__()
         self.geometry("960x600")
         self.title("LIB Leaching Toolkit")
-        self.iconbitmap(getPath("icon.ico"))
+        self.iconbitmap(getPath("data/icon.ico"))
 
         self.grid_rowconfigure(1, weight=0)
         self.grid_rowconfigure(1, weight=1)
@@ -1621,7 +1621,28 @@ def calcCosts():
 
     # Normalize costs by the total amount of metal leached
     molar_masses = {'Li': 6.94, 'Ni': 58.69, 'Mn': 54.94, 'Co': 58.93}
-    total_metal_leached = (y_pred_mu * molar_masses).sum(axis=1) / 1000  # kg of metal leached
+
+    # Build the composition matrix: first column is 1s (Li), then inputNi, inputMn, inputCo
+    composition = np.column_stack([
+        np.ones(X_test.shape[0]),
+        X_test[['inputNi', 'inputMn', 'inputCo']].to_numpy()
+    ])
+
+    # Calculate the molar mass of the NMC material
+    # (in g/mol) based on the input composition and molar masses
+    NMC_molar_mass = (composition * list(molar_masses.values())).sum(axis=1) + 2*15.999
+
+    # Calculate the maximum mol of each metal that can be leached
+    # Total mols of NMC = mass of NMC (kg) * 1e3 (g/kg) / molar mass (g/mol)
+    max_metal = (mLIB * 1e3 / NMC_molar_mass)[:, None] * composition
+
+    # Calculate the mols leached for each metal
+    metals_leached = max_metal * y_pred_mu.to_numpy()
+    # Convert to mass in kg
+    metals_leached_kg = metals_leached * np.array(list(molar_masses.values())).reshape(1, -1) / 1000  # kg of metal leached
+
+    # Calculate the mass of each metal leached
+    total_metal_leached = metals_leached_kg.sum(axis=1)
 
     costs['Acid Cost, €/kg'] = costs['Acid Cost, €'] / total_metal_leached
     costs['Mixing, €/kg'] = costs['Mixing, €'] / total_metal_leached
@@ -1672,15 +1693,15 @@ def pltEI(save=False):
 
 def pltCosts(save=False):
     '''
-    Plot the costs of reagents and heating per kg of metal leached.
+    Plot the costs of reagents and heating per kg of metal leached as a stacked bar plot.
     '''
     if not save:
-        print('* PLOT: Cost bar chart')
+        print('* PLOT: Cost stacked bar chart')
 
     title = 'Costs'
 
     plt.close(title)
-    fig, axes = plt.subplots(1, 3, figsize=(15, 5), num=title)
+    plt.figure(title, figsize=(10, 6))
 
     try:
         costs['Conditions'] = costs.index
@@ -1689,16 +1710,20 @@ def pltCosts(save=False):
         plt.close(title)
         return
 
-    # Plot acid costs per kg leached
-    sns.barplot(x='Conditions', y='Acid Cost, €/kg', data=costs, ax=axes[0])
-    axes[0].set_title('Acid cost per kg leached')
+    # Prepare data for stacked bar plot
+    cost_components = ['Acid Cost, €/kg', 'Mixing, €/kg', 'Heating, €/kg']
+    bottom = np.zeros(len(costs))
+    colors = ['#4c72b0', '#55a868', '#c44e52']
+    labels = ['Acid', 'Mixing', 'Heating']
 
-    sns.barplot(x='Conditions', y='Mixing, €/kg', data=costs, ax=axes[1])
-    axes[1].set_title('Mixing cost per kg leached')
+    for i, (comp, color, label) in enumerate(zip(cost_components, colors, labels)):
+        plt.bar(costs['Conditions'], costs[comp], bottom=bottom, color=color, label=label)
+        bottom += costs[comp].values
 
-    sns.barplot(x='Conditions', y='Heating, €/kg', data=costs, ax=axes[2])
-    axes[2].set_title('Heating cost per kg leached')
-
+    plt.xlabel('Conditions')
+    plt.ylabel('Cost per kg leached (€)')
+    plt.title('Costs per kg Metal Leached')
+    plt.legend()
     plt.tight_layout()
 
     if save:
