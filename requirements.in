@@ -1,0 +1,21 @@
+# requirements.in
+
+# Core logic and data handling
+numpy==2.1.0
+pandas==2.3.0
+openpyxl==3.1.5
+scipy==1.14.1
+
+# GUI Framework and Widgets
+customtkinter==5.2.2
+tksheet==7.3.0
+Pillow==11.0.0
+
+# Machine Learning & Cheminformatics
+joblib==1.4.2
+rdkit==2024.9.6
+scikit-learn==1.5.1
+
+# Plotting
+matplotlib==3.9.2
+seaborn==0.13.2
