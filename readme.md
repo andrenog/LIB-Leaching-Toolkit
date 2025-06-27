@@ -1,6 +1,6 @@
 # LIB Leaching Toolkit
 
-![LIB Leaching Toolkit Logo](icon.png)
+![LIB Leaching Toolkit Logo](data/icon.png)
 
 The LIB Leaching Toolkit is a Python-based application that helps researchers and engineers evaluate the environmental and economic impacts of lithium-ion battery cathode leaching. This toolkit provides tools to:
 
