@@ -1,5 +1,7 @@
 # LIB Leaching Toolkit
 
+[![DOI](https://zenodo.org/badge/872375933.svg)](https://doi.org/10.5281/zenodo.16096943)
+
 ![LIB Leaching Toolkit Logo](data/icon.png)
 
 The LIB Leaching Toolkit is a Python-based application that helps researchers and engineers evaluate the environmental and economic impacts of lithium-ion battery cathode leaching. This toolkit provides tools to:
@@ -102,11 +104,8 @@ This project is licensed under the MIT License - see the [License](LICENSE) file
 
 ## Citation
 
-If you use this software in your research, please cite it as follows. Zenodo provides a DOI (Digital Object Identifier) for this purpose.
+If you use this software in your research, please cite it using the DOI https://doi.org/10.5281/zenodo.16096943
 
-> [Your Name/Institute Name]. ([Year]). *LIB Leaching Toolkit* (Version X.X.X) [Computer software]. Zenodo. [https://doi.org/10.5281/zenodo.XXXXXXX](https://www.google.com/search?q=https://doi.org/10.5281/zenodo.XXXXXXX)
-
-*(Please replace with the specific version and DOI provided by Zenodo after publication.)*
 
 ## Disclaimer
 
