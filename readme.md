@@ -23,7 +23,7 @@ The LIB Leaching Toolkit can be installed in one of two ways.
 
 This method provides ready-to-run executables for Windows and Linux.
 
-  * Download the appropriate executable for your operating system from the [**Releases Page**](https://www.google.com/search?q=%5Blink-to-your-github-or-zenodo-releases-page%5D).
+  * Download the appropriate executable for your operating system from the **Releases** page.
   * No installation is required. Simply run the downloaded file.
 
 **2. From Source Code**
@@ -83,15 +83,17 @@ The toolkit can generate input tables for systematically studying reaction condi
 ## Data Files
 
 The `data` folder contains Excel files that store the default values for costs (`Acids_costs.xlsx`) and environmental impact multipliers (`Acids_impacts.xlsx`). You can modify these files to customize the data used by the toolkit.
-
+<!-- 
 **Important Note:** The impact multipliers are placeholders and **should be updated by the user** with values obtained from their preferred Life Cycle Assessment (LCA) software. The LCA software used to generate the initial values does not permit redistribution of this data.
+ -->
+
 
 ## Requirements
 
   * **Python:** This project requires Python 3.12 specifically. It will not work with Python 3.13 or newer due to library compatibility constraints with the pre-trained machine learning model.
   * **Operating System:**
       * The source code can be run on Windows, macOS, or Linux.
-      * Pre-compiled executables are provided for Windows and Linux.
+      * Pre-compiled executables for Windows are provided.
   * **Dependencies:** All required Python packages are listed in the `requirements.txt` file and are installed when following the source code installation instructions.
 
 ## License
@@ -111,5 +113,3 @@ If you use this software in your research, please cite it as follows. Zenodo pro
 This software is provided "as is" without warranty of any kind, express or implied, including but not to limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. In no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
 
 ## Acknowledgments
-
-Space for acknowledgments
